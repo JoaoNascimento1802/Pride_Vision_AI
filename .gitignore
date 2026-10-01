@@ -1,0 +1,48 @@
+# Segredos — NUNCA commitar
+.env
+.env.local
+.env.production
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos enviados pelos usuários
+uploads/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+
+# Caches de ferramentas
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+yarn-error.log*
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

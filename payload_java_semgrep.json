@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "check_id": "java.spring.security.injection.sql-injection",
+      "path": "src/main/java/com/empresa/financeiro/UserController.java",
+      "start": { "line": 42 },
+      "end": { "line": 42 },
+      "extra": {
+        "message": "Encontrada concatenação direta de string em consulta SQL (SQL Injection).",
+        "severity": "ERROR",
+        "metadata": {
+          "cwe": [ "CWE-89: Improper Neutralization of Special Elements used in an SQL Command" ],
+          "owasp": [ "A03:2021 - Injection" ]
+        }
+      }
+    },
+    {
+      "check_id": "java.lang.security.audit.crypto.weak-hash",
+      "path": "src/main/java/com/empresa/financeiro/AuthService.java",
+      "start": { "line": 15 },
+      "end": { "line": 15 },
+      "extra": {
+        "message": "Uso de algoritmo de hash fraco (MD5) detectado para senhas.",
+        "severity": "WARNING",
+        "metadata": {
+          "cwe": [ "CWE-328: Reversible One-Way Hash" ]
+        }
+      }
+    }
+  ]
+}
