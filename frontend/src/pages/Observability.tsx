@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Cartao } from '../components/Feedback'
 import { http } from '../api/client'
 
@@ -33,7 +33,7 @@ export function Observability() {
     try {
       const [resHealth, resMetrics] = await Promise.all([
         http.get<HealthStatus>('/api/health'),
-        http.get<string>('/metrics', { headers: { Accept: 'text/plain' } })
+        http.get<string>('/api/metrics', { headers: { Accept: 'text/plain' } })
       ])
       
       setHealth(resHealth.data)
@@ -78,7 +78,7 @@ export function Observability() {
   }
 
   if (loading) {
-    return <div className="p-6 text-gray-500">Carregando mÃ©tricas...</div>
+    return <div className="p-6 text-gray-500">Carregando métricas...</div>
   }
 
   return (
@@ -104,7 +104,7 @@ export function Observability() {
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-              <span className="font-medium">IntegraÃ§Ã£o Jira</span>
+              <span className="font-medium">Integração Jira</span>
               <span className={`px-2 py-1 rounded text-sm ${health?.services?.jira === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                 {health?.services?.jira?.toUpperCase() || 'UNKNOWN'}
               </span>
@@ -118,11 +118,11 @@ export function Observability() {
           </div>
         </Cartao>
 
-        <Cartao titulo="MÃ©tricas Principais (Prometheus)">
+        <Cartao titulo="Métricas Principais (Prometheus)">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-blue-50 rounded border border-blue-100">
-                <div className="text-sm text-blue-600 font-medium">RequisiÃ§Ãµes Totais</div>
+                <div className="text-sm text-blue-600 font-medium">Requisições Totais</div>
                 <div className="text-2xl font-bold text-blue-900">{metrics?.totalRequests || 0}</div>
               </div>
               <div className="p-4 bg-red-50 rounded border border-red-100">
@@ -134,7 +134,7 @@ export function Observability() {
                 <div className="text-2xl font-bold text-yellow-900">{metrics?.activeTasks || 0}</div>
               </div>
               <div className="p-4 bg-purple-50 rounded border border-purple-100">
-                <div className="text-sm text-purple-600 font-medium">ConexÃµes DB (Est.)</div>
+                <div className="text-sm text-purple-600 font-medium">Conexões DB (Est.)</div>
                 <div className="text-2xl font-bold text-purple-900">{metrics?.dbConnections || 0}</div>
               </div>
             </div>

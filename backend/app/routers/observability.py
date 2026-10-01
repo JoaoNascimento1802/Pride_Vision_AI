@@ -12,7 +12,7 @@ router = APIRouter(tags=["Observability"])
 
 
 
-@router.get("/metrics")
+@router.get("/api/metrics")
 def get_metrics(usuario: User = Depends(usuario_atual)) -> Response:
     '''Expõe métricas no formato Prometheus. Apenas ADMIN.'''
     if usuario.role != Role.ADMIN:
