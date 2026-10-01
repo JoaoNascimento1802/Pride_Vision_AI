@@ -1,0 +1,20 @@
+﻿import re
+
+with open('frontend/src/api/types.ts', 'r', encoding='utf-8') as f:
+    text = f.read()
+
+cloud_types = """
+export interface CloudPosture {
+  aws_issues: number;
+  gcp_issues: number;
+  azure_issues: number;
+  compliance_score: number;
+}
+"""
+
+if "CloudPosture" not in text:
+    text = text.replace("export interface DashboardResponse {", cloud_types + "\nexport interface DashboardResponse {")
+    text = text.replace("aplicacoes_em_risco: AplicacaoEmRisco[]", "aplicacoes_em_risco: AplicacaoEmRisco[];\n  cloud_posture: CloudPosture;")
+
+    with open('frontend/src/api/types.ts', 'w', encoding='utf-8') as f:
+        f.write(text)
