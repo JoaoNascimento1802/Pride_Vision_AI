@@ -17,6 +17,7 @@ import {
   YAxis,
 } from 'recharts'
 import { Link } from 'react-router-dom'
+import { Server, ShieldAlert, Shield, ShieldCheck, Activity } from 'lucide-react'
 
 import { obterDashboard } from '../api/client'
 import type { Risco } from '../api/types'
@@ -64,8 +65,9 @@ export function Dashboard() {
           acao={
             <Link
               to="/aplicacoes"
-              className="inline-block rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+              className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
             >
+              <Server className="h-4 w-4" />
               Cadastrar aplicação
             </Link>
           }
@@ -73,11 +75,11 @@ export function Dashboard() {
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-            <Indicador rotulo="Aplicações" valor={dados.total_aplicacoes} />
-            <Indicador rotulo="Vulnerabilidades" valor={dados.total_vulnerabilidades} />
-            <Indicador rotulo="Críticas" valor={dados.total_criticas} destaque="critico" />
-            <Indicador rotulo="Em correção" valor={dados.total_em_correcao} />
-            <Indicador rotulo="Corrigidas" valor={dados.total_corrigidas} destaque="ok" />
+            <Indicador rotulo="Aplicações" valor={dados.total_aplicacoes} icone={Server} />
+            <Indicador rotulo="Vulnerabilidades" valor={dados.total_vulnerabilidades} icone={ShieldAlert} />
+            <Indicador rotulo="Críticas" valor={dados.total_criticas} destaque="critico" icone={Activity} />
+            <Indicador rotulo="Em correção" valor={dados.total_em_correcao} icone={Shield} />
+            <Indicador rotulo="Corrigidas" valor={dados.total_corrigidas} destaque="ok" icone={ShieldCheck} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -135,51 +137,56 @@ export function Dashboard() {
             </Cartao>
           </div>
 
-          <Cartao titulo="Aplicações com maior risco">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <h3 className="text-sm font-semibold text-slate-800">Aplicações com maior risco</h3>
+            </div>
             {dados.aplicacoes_em_risco.length === 0 ? (
               <p className="py-6 text-center text-sm text-slate-500">
                 Nenhuma vulnerabilidade registrada.
               </p>
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 text-left text-xs uppercase tracking-wide text-slate-500">
-                    <th className="pb-2 font-medium">Aplicação</th>
-                    <th className="pb-2 font-medium">Ambiente</th>
-                    <th className="pb-2 font-medium">Exposição</th>
-                    <th className="pb-2 text-right font-medium">Críticas</th>
-                    <th className="pb-2 text-right font-medium">Altas</th>
-                    <th className="pb-2 text-right font-medium">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {dados.aplicacoes_em_risco.map((app) => (
-                    <tr key={app.id} className="hover:bg-slate-50">
-                      <td className="py-2.5">
-                        <Link
-                          to={`/vulnerabilidades?aplicacao_id=${app.id}`}
-                          className="font-medium text-slate-800 hover:text-violet-700 hover:underline"
-                        >
-                          {app.nome}
-                        </Link>
-                      </td>
-                      <td className="py-2.5">
-                        <EtiquetaAmbiente label={app.ambiente} />
-                      </td>
-                      <td className="py-2.5 text-slate-600">{app.exposicao}</td>
-                      <td className="py-2.5 text-right font-semibold text-critico">
-                        {app.criticas || '—'}
-                      </td>
-                      <td className="py-2.5 text-right font-medium text-alto">
-                        {app.altas || '—'}
-                      </td>
-                      <td className="py-2.5 text-right text-slate-600">{app.total}</td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm divide-y divide-slate-200">
+                  <thead className="bg-slate-50">
+                    <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+                      <th className="px-6 py-4 font-medium">Aplicação</th>
+                      <th className="px-6 py-4 font-medium">Ambiente</th>
+                      <th className="px-6 py-4 font-medium">Exposição</th>
+                      <th className="px-6 py-4 text-right font-medium">Críticas</th>
+                      <th className="px-6 py-4 text-right font-medium">Altas</th>
+                      <th className="px-6 py-4 text-right font-medium">Total</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 bg-white">
+                    {dados.aplicacoes_em_risco.map((app) => (
+                      <tr key={app.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <Link
+                            to={`/vulnerabilidades?aplicacao_id=${app.id}`}
+                            className="font-medium text-slate-800 hover:text-indigo-600 hover:underline"
+                          >
+                            {app.nome}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4">
+                          <EtiquetaAmbiente label={app.ambiente} />
+                        </td>
+                        <td className="px-6 py-4 text-slate-600">{app.exposicao}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-red-700">
+                          {app.criticas || '—'}
+                        </td>
+                        <td className="px-6 py-4 text-right font-medium text-amber-600">
+                          {app.altas || '—'}
+                        </td>
+                        <td className="px-6 py-4 text-right text-slate-600">{app.total}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
-          </Cartao>
+          </div>
         </div>
       )}
     </>
@@ -190,22 +197,31 @@ function Indicador({
   rotulo,
   valor,
   destaque,
+  icone: Icon,
 }: {
   rotulo: string
   valor: number
   destaque?: Risco | 'ok'
+  icone?: React.ElementType
 }) {
   const cor =
     destaque === 'critico' && valor > 0
-      ? 'text-critico'
+      ? 'text-red-700'
       : destaque === 'ok' && valor > 0
         ? 'text-emerald-600'
-        : 'text-slate-900'
+        : 'text-slate-800'
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{rotulo}</p>
-      <p className={`mt-1 text-2xl font-semibold ${cor}`}>{valor}</p>
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex items-center justify-between">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{rotulo}</p>
+        <p className={`mt-2 text-3xl font-semibold ${cor}`}>{valor}</p>
+      </div>
+      {Icon && (
+        <div className={`p-3 rounded-full ${destaque === 'critico' ? 'bg-red-50 text-red-600' : destaque === 'ok' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
+          <Icon className="h-6 w-6" />
+        </div>
+      )}
     </div>
   )
 }

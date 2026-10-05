@@ -1,17 +1,28 @@
-/**
- * DetalheVulnerabilidade.tsx — Tudo sobre um achado, e onde se age sobre ele.
- *
- * Reúne o que cada ferramenta reportou, por que aquele risco foi atribuído, a
- * explicação da IA e o histórico de tratamento.
- */
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import {
+  ArrowLeft,
+  Shield,
+  Server,
+  FileText,
+  Activity,
+  History,
+  User,
+  MessageSquare,
+  Link as LinkIcon,
+  CheckCircle,
+  AlertTriangle,
+  Plus,
+  RefreshCw,
+  Cpu,
+  Ticket
+} from 'lucide-react'
 
-import { 
+import {
   criarTicket,
-  gerarAnaliseIA, 
+  gerarAnaliseIA,
   mensagemDeErro,
-  mudarStatus, 
+  mudarStatus,
   obterVulnerabilidade,
   sincronizarTicket,
   atribuirOwner,
@@ -27,7 +38,7 @@ import {
   SeloCorrelacionada,
 } from '../components/Badges'
 
-import { Cartao, Carregando, Erro } from '../components/Feedback'
+import { Carregando, Erro } from '../components/Feedback'
 import { ContainerVerifications } from '../components/ContainerVerifications'
 import { useRequisicao } from '../hooks/useRequisicao'
 import { useAuth } from '../auth/useAuth'
@@ -39,6 +50,21 @@ const STATUS_DISPONIVEIS: { valor: StatusVulnerabilidade; label: string }[] = [
   { valor: 'corrigida', label: 'Corrigida' },
   { valor: 'falso_positivo', label: 'Falso positivo' },
 ]
+
+function Card({ titulo, acao, icone: Icon, children }: { titulo: string; acao?: React.ReactNode; icone?: React.ElementType; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+      <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+        <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2">
+          {Icon && <Icon className="w-5 h-5 text-indigo-600" />}
+          {titulo}
+        </h3>
+        {acao && <div>{acao}</div>}
+      </div>
+      <div className="p-6">{children}</div>
+    </div>
+  )
+}
 
 export function DetalheVulnerabilidade() {
   const { id } = useParams<{ id: string }>()
@@ -56,51 +82,53 @@ export function DetalheVulnerabilidade() {
   if (!vuln) return null
 
   return (
-    <>
+    <div className="min-h-screen bg-slate-50 p-6">
       <Link
         to="/vulnerabilidades"
-        className="mb-4 inline-block text-sm text-slate-500 hover:text-slate-800 hover:underline"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-indigo-600 hover:underline transition-colors"
       >
-        ← Voltar para a lista
+        <ArrowLeft className="w-4 h-4" /> Voltar para a lista
       </Link>
 
       <header className="mb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-xl font-semibold uppercase text-slate-900">
+          <h1 className="text-2xl font-bold uppercase text-slate-900 flex items-center gap-2">
+            <Shield className="w-7 h-7 text-indigo-600" />
             {vuln.tipo_vuln.replace(/_/g, ' ')}
           </h1>
           <BadgeRisco risco={vuln.risco} label={vuln.risco_label} />
           <BadgeStatus status={vuln.status} label={vuln.status_label} />
           {vuln.correlacionada && <SeloCorrelacionada />}
         </div>
-        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-          <span className="font-mono">{vuln.endpoint}</span>
-          <span>·</span>
-          <span>{vuln.aplicacao_nome}</span>
+        <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600 bg-white inline-flex px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+          <Server className="w-4 h-4 text-slate-400" />
+          <span className="font-mono text-slate-700">{vuln.endpoint}</span>
+          <span className="text-slate-300">|</span>
+          <span className="font-medium text-slate-700">{vuln.aplicacao_nome}</span>
           <EtiquetaAmbiente label={vuln.aplicacao_ambiente} />
         </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <Cartao titulo="Por que este risco">
+          <Card titulo="Visão Geral do Risco" icone={AlertTriangle}>
             <p className="text-sm leading-relaxed text-slate-700">{vuln.justificativa}</p>
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm sm:grid-cols-4">
-              <Dado rotulo="Encontrada no Semgrep" valor={vuln.encontrada_semgrep ? 'sim' : 'não'} />
-              <Dado rotulo="Confirmada pelo Nuclei" valor={vuln.confirmada_nuclei ? 'sim' : 'não'} />
+            <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 text-sm sm:grid-cols-4">
+              <Dado rotulo="Encontrada no Semgrep" valor={vuln.encontrada_semgrep ? 'Sim' : 'Não'} />
+              <Dado rotulo="Confirmada pelo Nuclei" valor={vuln.confirmada_nuclei ? 'Sim' : 'Não'} />
               <Dado
                 rotulo="Correlação"
-                valor={vuln.correlacionada ? 'encontrada' : 'não encontrada'}
+                valor={vuln.correlacionada ? 'Encontrada' : 'Não encontrada'}
               />
-              <Dado rotulo="Severidade original" valor={vuln.severidade_original ?? '—'} />
+              <Dado rotulo="Severidade Original" valor={vuln.severidade_original ?? '—'} />
             </dl>
-          </Cartao>
+          </Card>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
             {vuln.achados.map((achado) => (
-              <Cartao key={achado.id} titulo={`Resultado de ${achado.origem_label}`}>
+              <Card key={achado.id} titulo={`Resultado: ${achado.origem_label}`} icone={FileText}>
                 <DetalheAchado achado={achado} />
-              </Cartao>
+              </Card>
             ))}
           </div>
 
@@ -114,177 +142,204 @@ export function DetalheVulnerabilidade() {
           <PainelEvidencias vulnerabilidade={vuln} aoAtualizar={setLocal} />
           <PainelComentarios vulnerabilidade={vuln} aoAtualizar={setLocal} />
 
-          <Cartao titulo="Histórico">
-            <ol className="space-y-3">
-              {vuln.historico.map((item) => (
-                <li key={item.id} className="border-l-2 border-slate-200 pl-3 text-sm">
-                  <p className="font-medium text-slate-700">
-                    {item.status_anterior_label
-                      ? `${item.status_anterior_label} → ${item.status_novo_label}`
-                      : item.status_novo_label}
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {new Date(item.criado_em).toLocaleString('pt-BR')}
-                    {item.usuario_nome && ` · ${item.usuario_nome}`}
-                  </p>
-                  {item.comentario && (
-                    <p className="mt-1 text-slate-600">{item.comentario}</p>
+          <Card titulo="Histórico" icone={History}>
+            <ol className="space-y-4">
+              {vuln.historico.map((item, index) => (
+                <li key={item.id} className="relative pl-4">
+                  {index !== vuln.historico.length - 1 && (
+                    <div className="absolute left-[7px] top-5 bottom-[-16px] w-[2px] bg-slate-200" />
                   )}
+                  <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 border-indigo-600 bg-white" />
+                  <div className="pl-2">
+                    <p className="font-medium text-sm text-slate-700">
+                      {item.status_anterior_label
+                        ? `${item.status_anterior_label} → ${item.status_novo_label}`
+                        : item.status_novo_label}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {new Date(item.criado_em).toLocaleString('pt-BR')}
+                      {item.usuario_nome && ` · ${item.usuario_nome}`}
+                    </p>
+                    {item.comentario && (
+                      <p className="mt-2 text-sm text-slate-600 bg-slate-50 p-2 rounded-md border border-slate-100">{item.comentario}</p>
+                    )}
+                  </div>
                 </li>
               ))}
             </ol>
-          </Cartao>
+          </Card>
         </div>
       </div>
-    </>
+    </div>
+  )
+}
+
+function Clock({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
   )
 }
 
 function Dado({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
-    <div>
-      <dt className="text-xs uppercase tracking-wide text-slate-400">{rotulo}</dt>
-      <dd className="mt-0.5 font-medium text-slate-700">{valor}</dd>
+    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+      <dt className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-1">{rotulo}</dt>
+      <dd className="font-medium text-slate-900">{valor}</dd>
     </div>
   )
 }
 
-
-
 function DetalheAchado({ achado }: { achado: Achado }) {
   return (
-    <div className="space-y-2 text-sm">
-      <div className="flex items-center gap-2">
+    <div className="space-y-3 text-sm">
+      <div className="flex items-center gap-2 mb-3">
         <BadgeFerramenta nome={achado.origem_label} />
-        <span className="text-slate-500">severidade {achado.severidade}</span>
+        <span className="text-slate-500 bg-white px-2 py-0.5 rounded text-xs border border-slate-200">Severidade {achado.severidade}</span>
       </div>
 
-      <p className="font-mono text-xs break-all text-slate-600">{achado.regra_id}</p>
+      <p className="font-mono text-xs break-all text-indigo-700 bg-indigo-50 p-2 rounded-md border border-indigo-100">{achado.regra_id}</p>
 
-      {achado.arquivo && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Arquivo:</span>{' '}
-          <span className="font-mono text-xs">
-            {achado.arquivo}
-            {achado.linha != null && `:${achado.linha}`}
-          </span>
-        </p>
-      )}
-      {achado.cwe && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">CWE:</span> {achado.cwe}
-        </p>
-      )}
-      {achado.repository && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Repositório:</span> {achado.repository}
-        </p>
-      )}
-      {achado.commit && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Commit:</span>{' '}
-          <span className="font-mono text-xs">{achado.commit}</span>
-        </p>
-      )}
-      {achado.resource && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Recurso (IaC):</span>{' '}
-          <span className="font-mono text-xs">{achado.resource}</span>
-        </p>
-      )}
-      {achado.framework && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Framework (IaC):</span> {achado.framework}
-        </p>
-      )}
-      {achado.guideline && (
-        <p className="text-slate-700 break-all">
-          <span className="text-slate-400">Guideline:</span>{' '}
-          <a href={achado.guideline} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-            {achado.guideline}
-          </a>
-        </p>
-      )}
-
-      {/* Container Fields */}
-      {achado.registry_name && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Registry:</span> {achado.registry_name}
-        </p>
-      )}
-      {achado.image_repository && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Image Repository:</span> {achado.image_repository}
-        </p>
-      )}
-      {achado.image_name && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Image Name:</span> {achado.image_name}
-        </p>
-      )}
-      {achado.image_tag && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Image Tag:</span> {achado.image_tag}
-        </p>
-      )}
-      {achado.image_digest && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Image Digest:</span> <span className="font-mono text-xs">{achado.image_digest}</span>
-        </p>
-      )}
-      {achado.base_image && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Base Image:</span> {achado.base_image}
-        </p>
-      )}
-      {achado.os && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">OS:</span> {achado.os}
-        </p>
-      )}
-      {achado.layer && (
-        <p className="text-slate-700 break-all">
-          <span className="text-slate-400">Layer:</span> <span className="font-mono text-xs">{achado.layer}</span>
-        </p>
-      )}
-      {achado.pacote && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Package:</span> <span className="font-mono text-xs">{achado.pacote}</span>
-        </p>
-      )}
-      {achado.versao && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Installed Version:</span> <span className="font-mono text-xs">{achado.versao}</span>
-        </p>
-      )}
-      {achado.versao_corrigida && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Fixed Version:</span> <span className="font-mono text-xs">{achado.versao_corrigida}</span>
-        </p>
-      )}
-
-      {achado.url && (
-        <p className="break-all text-slate-700">
-          <span className="text-slate-400">URL:</span>{' '}
-          <span className="font-mono text-xs">{achado.url}</span>
-        </p>
-      )}
-      {achado.http_status != null && (
-        <p className="text-slate-700">
-          <span className="text-slate-400">Status HTTP:</span> {achado.http_status}
-        </p>
-      )}
-      {achado.evidencia && (
-        <div>
-          <p className="text-slate-400">Evidência:</p>
-          <pre className="mt-1 overflow-x-auto rounded bg-slate-50 p-2 font-mono text-xs text-slate-700">
-            {achado.evidencia}
-          </pre>
-        </div>
-      )}
+      <div className="space-y-2 mt-3 divide-y divide-slate-100">
+        {achado.arquivo && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Arquivo</span>
+            <span className="font-mono text-xs text-right break-all ml-4">
+              {achado.arquivo}
+              {achado.linha != null && `:${achado.linha}`}
+            </span>
+          </p>
+        )}
+        {achado.cwe && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">CWE</span>
+            <span className="text-right">{achado.cwe}</span>
+          </p>
+        )}
+        {achado.repository && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Repositório</span>
+            <span className="text-right font-medium">{achado.repository}</span>
+          </p>
+        )}
+        {achado.commit && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Commit</span>
+            <span className="font-mono text-xs text-right break-all ml-4">{achado.commit}</span>
+          </p>
+        )}
+        {achado.resource && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Recurso (IaC)</span>
+            <span className="font-mono text-xs text-right break-all ml-4">{achado.resource}</span>
+          </p>
+        )}
+        {achado.framework && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Framework (IaC)</span>
+            <span className="text-right">{achado.framework}</span>
+          </p>
+        )}
+        {achado.guideline && (
+          <p className="py-2 text-slate-700 flex flex-col gap-1">
+            <span className="text-slate-500 font-medium">Guideline</span>
+            <a href={achado.guideline} target="_blank" rel="noreferrer" className="text-indigo-600 hover:text-indigo-800 hover:underline break-all flex items-center gap-1">
+              <LinkIcon className="w-3 h-3" /> {achado.guideline}
+            </a>
+          </p>
+        )}
+        {achado.registry_name && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Registry</span>
+            <span className="text-right">{achado.registry_name}</span>
+          </p>
+        )}
+        {achado.image_repository && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Image Repository</span>
+            <span className="text-right">{achado.image_repository}</span>
+          </p>
+        )}
+        {achado.image_name && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Image Name</span>
+            <span className="text-right">{achado.image_name}</span>
+          </p>
+        )}
+        {achado.image_tag && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Image Tag</span>
+            <span className="text-right">{achado.image_tag}</span>
+          </p>
+        )}
+        {achado.image_digest && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Image Digest</span>
+            <span className="font-mono text-xs text-right break-all ml-4">{achado.image_digest}</span>
+          </p>
+        )}
+        {achado.base_image && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Base Image</span>
+            <span className="text-right">{achado.base_image}</span>
+          </p>
+        )}
+        {achado.os && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">OS</span>
+            <span className="text-right">{achado.os}</span>
+          </p>
+        )}
+        {achado.layer && (
+          <p className="py-2 text-slate-700 flex flex-col gap-1">
+            <span className="text-slate-500 font-medium">Layer</span>
+            <span className="font-mono text-xs break-all text-slate-600 bg-slate-50 p-2 rounded">{achado.layer}</span>
+          </p>
+        )}
+        {achado.pacote && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Pacote</span>
+            <span className="font-mono text-xs text-right">{achado.pacote}</span>
+          </p>
+        )}
+        {achado.versao && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Versão Instalada</span>
+            <span className="font-mono text-xs text-right">{achado.versao}</span>
+          </p>
+        )}
+        {achado.versao_corrigida && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Versão Corrigida</span>
+            <span className="font-mono text-xs text-right text-emerald-600 font-bold">{achado.versao_corrigida}</span>
+          </p>
+        )}
+        {achado.url && (
+          <p className="py-2 text-slate-700 flex flex-col gap-1">
+            <span className="text-slate-500 font-medium">URL</span>
+            <span className="font-mono text-xs break-all text-indigo-600">{achado.url}</span>
+          </p>
+        )}
+        {achado.http_status != null && (
+          <p className="py-2 text-slate-700 flex justify-between">
+            <span className="text-slate-500 font-medium">Status HTTP</span>
+            <span className="text-right font-mono">{achado.http_status}</span>
+          </p>
+        )}
+        {achado.evidencia && (
+          <div className="py-2">
+            <p className="text-slate-500 font-medium mb-1">Evidência</p>
+            <pre className="overflow-x-auto rounded-lg bg-slate-800 p-3 font-mono text-xs text-slate-50 shadow-inner">
+              {achado.evidencia}
+            </pre>
+          </div>
+        )}
+      </div>
 
       {achado.image_name && <ContainerVerifications imageName={achado.image_name} />}
-        <p className="border-t border-slate-100 pt-2 text-slate-600">{achado.mensagem}</p>
+      <p className="border-t border-slate-100 pt-3 mt-3 text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg">{achado.mensagem}</p>
     </div>
   )
 }
@@ -313,63 +368,77 @@ function PainelIA({
   }
 
   return (
-    <Cartao
+    <Card
       titulo="Análise da IA"
+      icone={Cpu}
       acao={
         <button
           type="button"
           onClick={gerar}
           disabled={gerando}
-          className="rounded-md border border-violet-300 px-3 py-1 text-xs font-medium text-violet-700 transition hover:bg-violet-50 disabled:opacity-60"
+          className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-indigo-700 hover:shadow-md disabled:opacity-60"
         >
-          {gerando ? 'Gerando…' : analise ? 'Gerar de novo' : 'Gerar explicação'}
+          {gerando ? (
+            <><RefreshCw className="w-3 h-3 animate-spin" /> Gerando...</>
+          ) : analise ? (
+            <><RefreshCw className="w-3 h-3" /> Gerar Novamente</>
+          ) : (
+            <><Cpu className="w-3 h-3" /> Gerar Explicação</>
+          )}
         </button>
       }
     >
       {erro && (
-        <p className="mb-3 rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{erro}</p>
+        <div className="mb-4 flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+          <AlertTriangle className="w-4 h-4" />
+          {erro}
+        </div>
       )}
 
       {!analise ? (
-        <p className="text-sm text-slate-500">
-          A IA explica o problema, o impacto e como corrigir. Ela recebe o risco já
-          classificado pelas regras do sistema e não participa dessa decisão. Dados
-          sensíveis são mascarados antes do envio.
-        </p>
+        <div className="text-center p-6 bg-slate-50 rounded-lg border border-slate-100 border-dashed">
+          <Cpu className="w-8 h-8 text-indigo-300 mx-auto mb-3" />
+          <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+            A IA explica o problema, o impacto e como corrigir. Ela recebe o risco já
+            classificado pelas regras do sistema e não participa dessa decisão. Dados
+            sensíveis são mascarados antes do envio.
+          </p>
+        </div>
       ) : (
-        <div className="space-y-4 text-sm">
+        <div className="space-y-5 text-sm">
           <SecaoIA titulo="Explicação" texto={analise.explicacao} />
           <SecaoIA titulo="Impacto" texto={analise.impacto} />
           <SecaoIA titulo="Por que foi priorizado assim" texto={analise.priorizacao} />
-          <SecaoIA titulo="Sugestão de correção" texto={analise.sugestao} />
-          <SecaoIA titulo="Como validar" texto={analise.validacao} />
+          <SecaoIA titulo="Sugestão de Correção" texto={analise.sugestao} />
+          <SecaoIA titulo="Como Validar" texto={analise.validacao} />
+          
           {analise.descricao_ticket && (
-            <div className="rounded-md bg-slate-50 p-3">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Descrição para ticket
+            <div className="rounded-lg bg-indigo-50 p-4 border border-indigo-100">
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-800 flex items-center gap-1">
+                <Ticket className="w-3 h-3" /> Descrição para Ticket
               </p>
-              <p className="whitespace-pre-line text-slate-700">{analise.descricao_ticket}</p>
+              <p className="whitespace-pre-line text-indigo-900 leading-relaxed font-medium">{analise.descricao_ticket}</p>
             </div>
           )}
           {analise.gerada_em && (
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-400 text-right italic">
               Gerada em {new Date(analise.gerada_em).toLocaleString('pt-BR')}
             </p>
           )}
         </div>
       )}
-    </Cartao>
+    </Card>
   )
 }
 
 function SecaoIA({ titulo, texto }: { titulo: string; texto: string | null }) {
   if (!texto) return null
   return (
-    <div>
-      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        {titulo}
-      </p>
-      <p className="leading-relaxed text-slate-700">{texto}</p>
+    <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
+      <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+        <CheckCircle className="w-3 h-3 text-indigo-500" /> {titulo}
+      </h4>
+      <p className="leading-relaxed text-slate-700 whitespace-pre-line">{texto}</p>
     </div>
   )
 }
@@ -415,20 +484,21 @@ function PainelStatus({
   }
 
   return (
-    <Cartao titulo="Acompanhamento">
+    <Card titulo="Acompanhamento" icone={Activity}>
       {podeMudar && (
         <textarea
           value={comentario}
           onChange={(evento) => setComentario(evento.target.value)}
           placeholder="Comentário da mudança (opcional)"
           rows={2}
-          className="mb-3 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+          className="mb-4 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-shadow"
         />
       )}
 
       {statusConfirmacao && (
-        <div className="mb-3 rounded-md bg-amber-50 p-3 border border-amber-200">
-          <p className="text-sm text-amber-800 mb-2 font-medium">
+        <div className="mb-4 rounded-lg bg-amber-50 p-4 border border-amber-200 shadow-sm">
+          <p className="text-sm text-amber-800 mb-3 font-semibold flex items-center gap-1">
+            <AlertTriangle className="w-4 h-4" />
             Justificativa obrigatória para {statusConfirmacao === 'falso_positivo' ? 'Falso Positivo' : 'Aceitação de Risco'}:
           </p>
           <textarea
@@ -436,19 +506,19 @@ function PainelStatus({
             onChange={(e) => setReason(e.target.value)}
             placeholder="Descreva o motivo técnico detalhado..."
             rows={3}
-            className="mb-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            className="mb-3 w-full rounded-md border border-amber-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200 bg-white"
           />
           <div className="flex gap-2">
             <button
               onClick={() => alterar(statusConfirmacao, reason)}
               disabled={!reason.trim() || salvando !== null}
-              className="rounded bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+              className="rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-700 hover:shadow-md transition-all disabled:opacity-50"
             >
               Confirmar
             </button>
             <button
               onClick={() => { setStatusConfirmacao(null); setReason(''); }}
-              className="rounded px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200"
+              className="rounded-lg px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-all"
             >
               Cancelar
             </button>
@@ -471,22 +541,26 @@ function PainelStatus({
                 type="button"
                 disabled={atual || salvando !== null || !podeMudar}
                 onClick={() => clickStatus(opcao.valor)}
-                className={`w-full rounded-md border px-3 py-2 text-left text-sm transition ${
+                className={`w-full flex justify-between items-center rounded-lg border px-4 py-3 text-left text-sm font-medium transition-all duration-200 ${
                   atual
-                    ? 'border-violet-300 bg-violet-50 font-medium text-violet-700'
-                    : 'border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50'
+                    ? 'border-indigo-300 bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-300'
+                    : 'border-slate-200 text-slate-700 bg-white hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 disabled:opacity-50 disabled:hover:bg-white disabled:hover:border-slate-200 disabled:hover:text-slate-700'
                 }`}
               >
-                {salvando === opcao.valor ? 'Salvando…' : opcao.label}
-                {atual && <span className="ml-2 text-xs">· atual</span>}
+                <span>{salvando === opcao.valor ? 'Salvando…' : opcao.label}</span>
+                {atual && <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-bold">Atual</span>}
               </button>
             )
           })}
         </div>
       )}
 
-      {erro && <p className="mt-3 text-sm text-rose-700">{erro}</p>}
-    </Cartao>
+      {erro && (
+        <div className="mt-4 flex items-center gap-1 text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">
+          <AlertTriangle className="w-4 h-4" /> {erro}
+        </div>
+      )}
+    </Card>
   )
 }
 
@@ -532,54 +606,66 @@ function PainelTickets({
   }
 
   return (
-    <Cartao titulo="Tickets e Remediação">
-      {erro && <p className="mb-3 text-sm text-red-600">{erro}</p>}
+    <Card titulo="Tickets e Remediação" icone={Ticket}>
+      {erro && (
+        <div className="mb-4 flex items-center gap-1 text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">
+          <AlertTriangle className="w-4 h-4" /> {erro}
+        </div>
+      )}
       
       {vuln.tickets && vuln.tickets.length > 0 ? (
-        <ul className="space-y-4 mb-4">
-          {vuln.tickets.map(t => (
-            <li key={t.id} className="text-sm border rounded p-3 bg-slate-50">
-              <div className="flex justify-between items-start">
-                <div>
-                  <a href={t.url} target="_blank" rel="noreferrer" className="font-medium text-blue-600 hover:underline">
-                    {t.external_key || t.external_id}
-                  </a>
-                  <p className="text-slate-600 mt-1">{t.title}</p>
-                  <p className="text-xs text-slate-400 mt-2">Status: <span className="uppercase font-semibold">{t.status}</span></p>
-                </div>
-                {podeSync && (
-                  <button
-                    type="button"
-                    onClick={() => sincronizar(t.id)}
-                    disabled={carregando}
-                    title="Sincronizar"
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    🔄
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="mb-4 overflow-hidden rounded-lg border border-slate-200">
+          <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <tbody className="divide-y divide-slate-200 bg-white">
+              {vuln.tickets.map((t) => (
+                <tr key={t.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <a href={t.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-800 hover:underline">
+                          {t.external_key || t.external_id} <LinkIcon className="w-3 h-3" />
+                        </a>
+                        <p className="text-slate-700 mt-1 font-medium">{t.title}</p>
+                        <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                          Status: <span className="uppercase font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">{t.status}</span>
+                        </p>
+                      </div>
+                      {podeSync && (
+                        <button
+                          type="button"
+                          onClick={() => sincronizar(t.id)}
+                          disabled={carregando}
+                          title="Sincronizar"
+                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          <RefreshCw className={`w-4 h-4 ${carregando ? 'animate-spin' : ''}`} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <p className="text-sm text-slate-500 mb-4">Nenhum ticket associado.</p>
+        <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100 border-dashed mb-4">
+          <p className="text-sm text-slate-500">Nenhum ticket associado.</p>
+        </div>
       )}
 
       {podeCriar && (
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => criar('jira')}
-            disabled={carregando}
-            className="flex items-center gap-2 rounded bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50"
-          >
-            ✨
-            Criar no Jira
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => criar('jira')}
+          disabled={carregando}
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-300 transition-all shadow-sm disabled:opacity-50"
+        >
+          <Plus className="w-4 h-4" />
+          Criar no Jira
+        </button>
       )}
-    </Cartao>
+    </Card>
   )
 }
 
@@ -608,79 +694,84 @@ function PainelOwner({
       aoAtualizar(atualizada)
       setEditando(false)
     } catch (e: any) {
-      setErro(mensagemDeErro(e, 'Erro ao atribuir responsÃ¡vel'))
+      setErro(mensagemDeErro(e, 'Erro ao atribuir responsável'))
     } finally {
       setSalvando(false)
     }
   }
 
   return (
-    <Cartao titulo="ResponsÃ¡vel">
+    <Card titulo="Responsável" icone={User}>
       {!editando ? (
-        <div className="text-sm text-slate-700">
-          <p>
-            <span className="font-medium text-slate-500">ID:</span> {vuln.owner_id || 'Nenhum'}
-          </p>
-          <p>
-            <span className="font-medium text-slate-500">Equipe:</span> {vuln.owner_team || 'Nenhuma'}
-          </p>
+        <div className="text-sm">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-2">
+            <p className="flex justify-between items-center">
+              <span className="font-semibold text-slate-500 text-xs uppercase tracking-wide">ID do Usuário</span> 
+              <span className="font-medium text-slate-900">{vuln.owner_id || 'Nenhum'}</span>
+            </p>
+            <div className="border-t border-slate-200" />
+            <p className="flex justify-between items-center">
+              <span className="font-semibold text-slate-500 text-xs uppercase tracking-wide">Equipe</span> 
+              <span className="font-medium text-slate-900">{vuln.owner_team || 'Nenhuma'}</span>
+            </p>
+          </div>
+          
           {vuln.assigned_at && (
-            <p className="mt-1 text-xs text-slate-400">
-              AtribuÃ­do em {new Date(vuln.assigned_at).toLocaleString('pt-BR')}
+            <p className="mt-3 text-xs text-slate-400 text-center flex items-center justify-center gap-1">
+              <Clock className="w-3 h-3" /> Atribuído em {new Date(vuln.assigned_at).toLocaleString('pt-BR')}
             </p>
           )}
           {podeMudar && (
             <button
               onClick={() => setEditando(true)}
-              className="mt-3 text-xs font-medium text-violet-600 hover:underline"
+              className="mt-4 w-full rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-all shadow-sm"
             >
-              Alterar responsÃ¡vel
+              Alterar Responsável
             </button>
           )}
         </div>
       ) : (
-        <div className="space-y-3 text-sm">
+        <div className="space-y-4 text-sm bg-slate-50 p-4 rounded-lg border border-slate-200">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">ID do UsuÃ¡rio</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">ID do Usuário</label>
             <input
               type="number"
               value={ownerId}
               onChange={(e) => setOwnerId(e.target.value)}
-              className="w-full rounded border border-slate-300 px-2 py-1 outline-none focus:border-violet-500"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white"
               placeholder="Ex: 1"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Equipe</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Equipe</label>
             <input
               type="text"
               value={ownerTeam}
               onChange={(e) => setOwnerTeam(e.target.value)}
-              className="w-full rounded border border-slate-300 px-2 py-1 outline-none focus:border-violet-500"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white"
               placeholder="Ex: Squad Sec"
             />
           </div>
-          {erro && <p className="text-xs text-rose-600">{erro}</p>}
-          <div className="flex gap-2">
+          {erro && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{erro}</p>}
+          <div className="flex gap-2 pt-2">
             <button
               onClick={salvar}
               disabled={salvando}
-              className="rounded bg-violet-600 px-3 py-1 text-xs font-medium text-white hover:bg-violet-700 
-disabled:opacity-50"
+              className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 hover:shadow-md transition-all disabled:opacity-50"
             >
               {salvando ? 'Salvando...' : 'Salvar'}
             </button>
             <button
               onClick={() => setEditando(false)}
               disabled={salvando}
-              className="rounded px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200"
+              className="flex-1 rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-all"
             >
               Cancelar
             </button>
           </div>
         </div>
       )}
-    </Cartao>
+    </Card>
   )
 }
 
@@ -704,57 +795,64 @@ function PainelComentarios({
     setErro(null)
     try {
       await adicionarComentario(vuln.id, conteudo)
-      // Recarrega vulnerabilidade para trazer o comentÃ¡rio
       const atualizada = await obterVulnerabilidade(vuln.id)
       aoAtualizar(atualizada)
       setConteudo('')
     } catch (e: any) {
-      setErro(mensagemDeErro(e, 'Erro ao adicionar comentÃ¡rio'))
+      setErro(mensagemDeErro(e, 'Erro ao adicionar comentário'))
     } finally {
       setSalvando(false)
     }
   }
 
   return (
-    <Cartao titulo="ComentÃ¡rios da RemediaÃ§Ã£o">
+    <Card titulo="Comentários da Remediação" icone={MessageSquare}>
       {vuln.comments && vuln.comments.length > 0 ? (
-        <ul className="mb-4 space-y-3">
-          {vuln.comments.map(c => (
-            <li key={c.id} className="rounded-md bg-slate-50 p-3 text-sm">
-              <div className="mb-1 flex justify-between text-xs text-slate-500">
-                <span className="font-semibold">{c.author_name || `User ${c.author_id}`}</span>
-                <span>{new Date(c.created_at).toLocaleString('pt-BR')}</span>
+        <ul className="mb-6 space-y-4">
+          {vuln.comments.map((c) => (
+            <li key={c.id} className="rounded-xl bg-slate-50 p-4 border border-slate-100 shadow-sm relative">
+              <div className="absolute -left-2 -top-2 bg-indigo-100 rounded-full p-1 border-2 border-white">
+                <User className="w-4 h-4 text-indigo-600" />
               </div>
-              <p className="whitespace-pre-line text-slate-700">{c.content}</p>
+              <div className="ml-2">
+                <div className="mb-2 flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs text-slate-500 gap-1">
+                  <span className="font-bold text-slate-700 text-sm">{c.author_name || `User ${c.author_id}`}</span>
+                  <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(c.created_at).toLocaleString('pt-BR')}</span>
+                </div>
+                <p className="whitespace-pre-line text-slate-800 text-sm leading-relaxed">{c.content}</p>
+              </div>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="mb-4 text-sm text-slate-500">Nenhum comentÃ¡rio registrado.</p>
+        <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100 border-dashed mb-6">
+          <p className="text-sm text-slate-500">Nenhum comentário registrado.</p>
+        </div>
       )}
 
       {podeComentar && (
-        <div className="space-y-2">
+        <div className="space-y-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <textarea
             value={conteudo}
             onChange={(e) => setConteudo(e.target.value)}
-            placeholder="Adicionar comentÃ¡rio..."
-            rows={2}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none 
-focus:border-violet-500"
+            placeholder="Adicionar comentário..."
+            rows={3}
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all resize-none"
           />
-          {erro && <p className="text-xs text-rose-600">{erro}</p>}
-          <button
-            onClick={salvar}
-            disabled={salvando || !conteudo.trim()}
-            className="rounded bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 
-disabled:opacity-50"
-          >
-            {salvando ? 'Enviando...' : 'Comentar'}
-          </button>
+          {erro && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{erro}</p>}
+          <div className="flex justify-end">
+            <button
+              onClick={salvar}
+              disabled={salvando || !conteudo.trim()}
+              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 hover:shadow-md transition-all disabled:opacity-50"
+            >
+              <MessageSquare className="w-4 h-4" />
+              {salvando ? 'Enviando...' : 'Comentar'}
+            </button>
+          </div>
         </div>
       )}
-    </Cartao>
+    </Card>
   )
 }
 
@@ -784,66 +882,78 @@ function PainelEvidencias({
       setDescricao('')
       setReferencia('')
     } catch (e: any) {
-      setErro(mensagemDeErro(e, 'Erro ao adicionar evidÃªncia'))
+      setErro(mensagemDeErro(e, 'Erro ao adicionar evidência'))
     } finally {
       setSalvando(false)
     }
   }
 
   return (
-    <Cartao titulo="EvidÃªncias de CorreÃ§Ã£o">
+    <Card titulo="Evidências de Correção" icone={CheckCircle}>
       {vuln.evidences && vuln.evidences.length > 0 ? (
-        <ul className="mb-4 space-y-3">
-          {vuln.evidences.map(e => (
-            <li key={e.id} className="rounded-md border border-slate-200 p-3 text-sm">
-              <div className="mb-1 flex justify-between text-xs text-slate-500">
-                <span className="font-semibold text-slate-700">{e.evidence_type}</span>
-                <span>{new Date(e.created_at).toLocaleString('pt-BR')}</span>
-              </div>
-              <p className="text-slate-700">{e.description}</p>
-              {e.reference && (
-                <a href={e.reference} target="_blank" rel="noreferrer" className="mt-1 block text-xs text-blue-600 
-hover:underline break-all">
-                  {e.reference}
-                </a>
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className="mb-6 overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+          <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <tbody className="divide-y divide-slate-200 bg-white">
+              {vuln.evidences.map((e) => (
+                <tr key={e.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs text-slate-500 mb-2 gap-1">
+                      <span className="font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md">{e.evidence_type}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(e.created_at).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <p className="text-slate-800 text-sm font-medium mb-1">{e.description}</p>
+                    {e.reference && (
+                      <a href={e.reference} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 hover:underline break-all mt-2 bg-indigo-50 px-2 py-1 rounded-md w-fit">
+                        <LinkIcon className="w-3 h-3" /> {e.reference}
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <p className="mb-4 text-sm text-slate-500">Nenhuma evidÃªncia registrada.</p>
+        <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100 border-dashed mb-6">
+          <p className="text-sm text-slate-500">Nenhuma evidência registrada.</p>
+        </div>
       )}
 
       {podeAdicionar && (
-        <div className="space-y-2 rounded-md bg-slate-50 p-3 border border-slate-100">
-          <p className="text-xs font-semibold text-slate-600 mb-2">Nova EvidÃªncia</p>
-          <input
-            type="text"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="DescriÃ§Ã£o (ex: Commit de correÃ§Ã£o)"
-            className="w-full rounded border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-violet-500"
-          />
-          <input
-            type="text"
-            value={referencia}
-            onChange={(e) => setReferencia(e.target.value)}
-            placeholder="URL ou ReferÃªncia (opcional)"
-            className="w-full rounded border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-violet-500"
-          />
-          {erro && <p className="text-xs text-rose-600">{erro}</p>}
-          <button
-            onClick={salvar}
-            disabled={salvando || !descricao.trim()}
-            className="rounded bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-300 
-disabled:opacity-50"
-          >
-            {salvando ? 'Adicionando...' : 'Adicionar EvidÃªncia'}
-          </button>
+        <div className="space-y-3 bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-inner">
+          <p className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-1 uppercase tracking-wide">
+            <Plus className="w-4 h-4 text-indigo-600" /> Nova Evidência
+          </p>
+          <div>
+            <input
+              type="text"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Descrição (ex: Commit de correção)"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white"
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              value={referencia}
+              onChange={(e) => setReferencia(e.target.value)}
+              placeholder="URL ou Referência (opcional)"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-white"
+            />
+          </div>
+          {erro && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{erro}</p>}
+          <div className="pt-2">
+            <button
+              onClick={salvar}
+              disabled={salvando || !descricao.trim()}
+              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 hover:shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {salvando ? <><RefreshCw className="w-4 h-4 animate-spin" /> Adicionando...</> : <><CheckCircle className="w-4 h-4" /> Adicionar Evidência</>}
+            </button>
+          </div>
         </div>
       )}
-    </Cartao>
+    </Card>
   )
 }
-
-

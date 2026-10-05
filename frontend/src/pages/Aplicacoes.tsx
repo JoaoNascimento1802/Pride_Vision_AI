@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { Plus, Edit2, Trash2, Eye, FileUp,  } from 'lucide-react'
 
 import {
   atualizarAplicacao,
@@ -26,7 +27,7 @@ import type {
   UploadResumo,
 } from '../api/types'
 import { BadgeFerramenta, EtiquetaAmbiente } from '../components/Badges'
-import { Aviso, Cartao, Carregando, Erro, Vazio } from '../components/Feedback'
+import { Aviso, Carregando, Erro, Vazio } from '../components/Feedback'
 import { TituloDaPagina } from '../components/Layout'
 import { useRequisicao } from '../hooks/useRequisicao'
 import { useAuth } from '../auth/useAuth'
@@ -51,9 +52,14 @@ export function Aplicacoes() {
             <button
               type="button"
               onClick={() => setMostrarFormulario((atual) => !atual)}
-              className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+              className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
             >
-              {mostrarFormulario ? 'Cancelar' : 'Nova aplicação'}
+              {mostrarFormulario ? 'Cancelar' : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nova aplicação
+                </>
+              )}
             </button>
           )
         }
@@ -78,8 +84,9 @@ export function Aplicacoes() {
                 <button
                   type="button"
                   onClick={() => setMostrarFormulario(true)}
-                  className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+                  className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
                 >
+                  <Plus className="mr-2 h-4 w-4" />
                   Cadastrar primeira aplicação
                 </button>
               )
@@ -156,7 +163,7 @@ function CartaoAplicacao({
   }
 
   return (
-    <Cartao>
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-6 transition-all hover:shadow-md">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -170,41 +177,46 @@ function CartaoAplicacao({
           </p>
         </div>
 
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex flex-wrap items-center gap-4 text-sm w-full sm:w-auto">
           <Contador rotulo="Total" valor={aplicacao.total_vulnerabilidades} />
           <Contador rotulo="Críticas" valor={aplicacao.total_criticas} alerta />
           <Contador rotulo="Abertas" valor={aplicacao.total_abertas} />
-          {aplicacao.total_vulnerabilidades > 0 && (
-            <Link
-              to={`/vulnerabilidades?aplicacao_id=${aplicacao.id}`}
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-            >
-              Ver
-            </Link>
-          )}
-          {podeEscrever && (
-            <>
-              <button
-                type="button"
-                onClick={() => setEditando((atual) => !atual)}
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+            {aplicacao.total_vulnerabilidades > 0 && (
+              <Link
+                to={`/vulnerabilidades?aplicacao_id=${aplicacao.id}`}
+                className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm"
               >
-                {editando ? 'Cancelar' : 'Editar'}
-              </button>
-              <button
-                type="button"
-                onClick={excluir}
-                className="rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-rose-50 hover:text-rose-600"
-              >
-                Remover
-              </button>
-            </>
-          )}
+                <Eye className="mr-1.5 h-3 w-3" />
+                Ver
+              </Link>
+            )}
+            {podeEscrever && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setEditando((atual) => !atual)}
+                  className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm"
+                >
+                  <Edit2 className="mr-1.5 h-3 w-3" />
+                  {editando ? 'Cancelar' : 'Editar'}
+                </button>
+                <button
+                  type="button"
+                  onClick={excluir}
+                  className="inline-flex items-center rounded-md px-2 py-1.5 text-xs text-slate-400 transition-all duration-200 hover:bg-rose-50 hover:text-rose-600"
+                >
+                  <Trash2 className="mr-1.5 h-3 w-3" />
+                  Remover
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
       {editando && (
-        <div className="mt-4 border-t border-slate-100 pt-4">
+        <div className="mt-4 border-t border-slate-200 pt-4">
           <FormularioAplicacao
             aplicacao={aplicacao}
             aoSalvar={(mudouContexto) => {
@@ -226,7 +238,7 @@ function CartaoAplicacao({
         </p>
       )}
 
-      <div className="mt-4 border-t border-slate-100 pt-4">
+      <div className="mt-4 border-t border-slate-200 pt-4">
         <RelatoriosEmVigor uploads={uploads.dados} carregando={uploads.carregando} />
 
         {usuario?.permissions.includes('upload:create') && (
@@ -296,7 +308,7 @@ function CartaoAplicacao({
           )}
         </div>
       )}
-    </Cartao>
+    </div>
   )
 }
 
@@ -349,7 +361,7 @@ function Contador({
       <p className="text-xs uppercase tracking-wide text-slate-400">{rotulo}</p>
       <p
         className={`text-lg font-semibold ${
-          alerta && valor > 0 ? 'text-critico' : 'text-slate-800'
+          alerta && valor > 0 ? 'text-rose-600' : 'text-slate-800'
         }`}
       >
         {valor}
@@ -371,10 +383,11 @@ function BotaoUpload({
 }) {
   return (
     <label
-      className={`cursor-pointer rounded-md border border-dashed border-slate-300 px-4 py-2 text-sm transition ${
-        ocupado ? 'bg-slate-100 text-slate-400' : 'text-slate-600 hover:border-violet-400 hover:bg-violet-50'
+      className={`inline-flex cursor-pointer items-center justify-center rounded-md border border-dashed border-slate-300 px-4 py-2 text-sm transition-all duration-200 ${
+        ocupado ? 'bg-slate-50 text-slate-400' : 'text-slate-600 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700'
       }`}
     >
+      <FileUp className="mr-2 h-4 w-4" />
       {ocupado ? 'Processando…' : rotulo}
       <input
         type="file"
@@ -496,11 +509,11 @@ function FormularioAplicacao({
           </p>
         )}
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2 mt-2">
           <button
             type="submit"
             disabled={enviando}
-            className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-60"
+            className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 hover:shadow-md disabled:opacity-60"
           >
             {enviando ? 'Salvando…' : editando ? 'Salvar alterações' : 'Cadastrar'}
           </button>
@@ -515,7 +528,12 @@ function FormularioAplicacao({
 
   // Na edição o formulário já está dentro do cartão da aplicação; envolvê-lo em
   // outro cartão criaria uma moldura dentro da outra.
-  return editando ? conteudo : <Cartao titulo="Nova aplicação">{conteudo}</Cartao>
+  return editando ? conteudo : (
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-6 mb-6">
+      <h2 className="text-lg font-semibold text-slate-900 mb-4">Nova aplicação</h2>
+      {conteudo}
+    </div>
+  )
 }
 
 function Texto({
@@ -537,7 +555,7 @@ function Texto({
         value={valor}
         required={obrigatorio}
         onChange={(evento) => aoMudar(evento.target.value)}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
       />
     </label>
   )
@@ -560,7 +578,7 @@ function Selecao({
       <select
         value={valor}
         onChange={(evento) => aoMudar(evento.target.value)}
-        className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+        className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none transition-colors duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
       >
         {opcoes.map((opcao) => (
           <option key={opcao.valor} value={opcao.valor}>

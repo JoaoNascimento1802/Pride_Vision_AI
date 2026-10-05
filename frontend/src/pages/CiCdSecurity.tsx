@@ -5,6 +5,7 @@
  * políticas ativas e permite executar um check manual.
  */
 import { useEffect, useState } from 'react'
+import { CheckCircle, AlertTriangle, XCircle, Play, ShieldOff, Activity, Shield, ShieldAlert, XOctagon } from 'lucide-react'
 
 import {
   desativarPolicy,
@@ -20,15 +21,15 @@ import { TituloDaPagina } from '../components/Layout'
 // ─── helpers visuais ──────────────────────────────────────────────────────────
 
 const BADGE: Record<GateDecision, string> = {
-  pass: 'bg-emerald-100 text-emerald-800',
-  warn: 'bg-amber-100 text-amber-800',
-  block: 'bg-red-100 text-red-800',
+  pass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  warn: 'bg-amber-100 text-amber-800 border-amber-200',
+  block: 'bg-red-100 text-red-800 border-red-200',
 }
 
-const ICONE: Record<GateDecision, string> = {
-  pass: '✅',
-  warn: '⚠️',
-  block: '🚫',
+const ICONE: Record<GateDecision, React.ReactNode> = {
+  pass: <CheckCircle className="h-3.5 w-3.5" />,
+  warn: <AlertTriangle className="h-3.5 w-3.5" />,
+  block: <XCircle className="h-3.5 w-3.5" />,
 }
 
 const LABEL: Record<GateDecision, string> = {
@@ -40,7 +41,7 @@ const LABEL: Record<GateDecision, string> = {
 function BadgeDecision({ decision }: { decision: GateDecision }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BADGE[decision]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${BADGE[decision]}`}
     >
       {ICONE[decision]} {LABEL[decision]}
     </span>
@@ -116,7 +117,8 @@ export function CiCdSecurity() {
 
   if (erro) {
     return (
-      <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 flex items-center gap-3 shadow-sm">
+        <AlertTriangle className="h-5 w-5 text-red-500" />
         Erro ao carregar dados: {erro}
       </div>
     )
@@ -132,24 +134,32 @@ export function CiCdSecurity() {
       {/* ── Resumo ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { rotulo: 'Pipelines', valor: pipelines.length, cor: 'text-slate-700' },
-          { rotulo: 'Aprovados', valor: totalPass, cor: 'text-emerald-700' },
-          { rotulo: 'Com aviso', valor: totalWarn, cor: 'text-amber-700' },
-          { rotulo: 'Bloqueados', valor: totalBlock, cor: 'text-red-700' },
-        ].map(({ rotulo, valor, cor }) => (
+          { rotulo: 'Pipelines', valor: pipelines.length, cor: 'text-slate-800', icone: Activity, bgIcon: 'bg-slate-100 text-slate-500' },
+          { rotulo: 'Aprovados', valor: totalPass, cor: 'text-emerald-700', icone: Shield, bgIcon: 'bg-emerald-50 text-emerald-600' },
+          { rotulo: 'Com aviso', valor: totalWarn, cor: 'text-amber-700', icone: ShieldAlert, bgIcon: 'bg-amber-50 text-amber-600' },
+          { rotulo: 'Bloqueados', valor: totalBlock, cor: 'text-red-700', icone: XOctagon, bgIcon: 'bg-red-50 text-red-600' },
+        ].map(({ rotulo, valor, cor, icone: Icon, bgIcon }) => (
           <div
             key={rotulo}
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex items-center justify-between"
           >
-            <p className="text-xs font-medium text-slate-500">{rotulo}</p>
-            <p className={`mt-1 text-2xl font-bold ${cor}`}>{valor}</p>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{rotulo}</p>
+              <p className={`mt-2 text-3xl font-semibold ${cor}`}>{valor}</p>
+            </div>
+            <div className={`p-3 rounded-full ${bgIcon}`}>
+              <Icon className="h-6 w-6" />
+            </div>
           </div>
         ))}
       </div>
 
       {/* ── Check manual ───────────────────────────────────────────── */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-3 text-sm font-semibold text-slate-800">Executar check manual</h2>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+        <h2 className="mb-4 text-base font-semibold text-slate-800 flex items-center gap-2">
+          <Play className="h-5 w-5 text-indigo-600" />
+          Executar check manual
+        </h2>
         <div className="flex items-center gap-3">
           <input
             type="number"
@@ -157,112 +167,127 @@ export function CiCdSecurity() {
             placeholder="ID da aplicação"
             value={appId}
             onChange={(e) => setAppId(e.target.value)}
-            className="w-44 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            className="w-48 rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-colors"
           />
           <button
             onClick={handleCheck}
             disabled={checkando}
-            className="rounded-lg bg-violet-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 hover:shadow-md disabled:opacity-50 disabled:hover:bg-indigo-600 disabled:hover:shadow-none"
           >
-            {checkando ? 'Avaliando…' : 'Executar gate'}
+            {checkando ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Avaliando…
+              </>
+            ) : (
+              <>Executar gate</>
+            )}
           </button>
         </div>
-        {checkErro && <p className="mt-2 text-xs text-red-600">{checkErro}</p>}
+        {checkErro && <p className="mt-3 text-sm text-red-600 flex items-center gap-1.5"><AlertTriangle className="h-4 w-4" />{checkErro}</p>}
       </div>
 
       {/* ── Histórico de pipelines ─────────────────────────────────── */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-slate-700">Pipelines recentes</h2>
+        <h2 className="mb-4 text-base font-semibold text-slate-800">Pipelines recentes</h2>
         {pipelines.length === 0 ? (
-          <p className="text-sm text-slate-400">Nenhum pipeline avaliado ainda.</p>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
+            <p className="text-sm text-slate-500">Nenhum pipeline avaliado ainda.</p>
+          </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table className="w-full text-sm">
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs font-medium text-slate-500">
-                <tr>
-                  <th className="px-4 py-2 text-left">App</th>
-                  <th className="px-4 py-2 text-left">Branch</th>
-                  <th className="px-4 py-2 text-left">Commit</th>
-                  <th className="px-4 py-2 text-left">Provider</th>
-                  <th className="px-4 py-2 text-left">Última decisão</th>
-                  <th className="px-4 py-2 text-left">Em</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {pipelines.map((run) => (
-                  <tr key={run.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-2 font-mono text-xs">{run.aplicacao_id}</td>
-                    <td className="px-4 py-2 text-slate-600">{run.branch ?? '—'}</td>
-                    <td className="px-4 py-2 font-mono text-xs text-slate-500">
-                      {run.commit_sha ? run.commit_sha.slice(0, 8) : '—'}
-                    </td>
-                    <td className="px-4 py-2 text-slate-500 capitalize">
-                      {run.provider ?? '—'}
-                    </td>
-                    <td className="px-4 py-2">
-                      {run.ultimo_resultado ? (
-                        <BadgeDecision decision={run.ultimo_resultado.decision} />
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-slate-400">
-                      {run.ultimo_resultado
-                        ? formatar(run.ultimo_resultado.avaliado_em)
-                        : formatar(run.criado_em)}
-                    </td>
+          <div className="overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm divide-y divide-slate-200">
+                <thead className="bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-6 py-4 text-left">App</th>
+                    <th className="px-6 py-4 text-left">Branch</th>
+                    <th className="px-6 py-4 text-left">Commit</th>
+                    <th className="px-6 py-4 text-left">Provider</th>
+                    <th className="px-6 py-4 text-left">Última decisão</th>
+                    <th className="px-6 py-4 text-left">Em</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-200 bg-white">
+                  {pipelines.map((run) => (
+                    <tr key={run.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 font-mono text-xs text-slate-800">{run.aplicacao_id}</td>
+                      <td className="px-6 py-4 text-slate-600">{run.branch ?? '—'}</td>
+                      <td className="px-6 py-4 font-mono text-xs text-slate-500">
+                        {run.commit_sha ? run.commit_sha.slice(0, 8) : '—'}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 capitalize">
+                        {run.provider ?? '—'}
+                      </td>
+                      <td className="px-6 py-4">
+                        {run.ultimo_resultado ? (
+                          <BadgeDecision decision={run.ultimo_resultado.decision} />
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-slate-500">
+                        {run.ultimo_resultado
+                          ? formatar(run.ultimo_resultado.avaliado_em)
+                          : formatar(run.criado_em)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>
 
       {/* ── Políticas ativas ───────────────────────────────────────── */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-slate-700">Políticas ativas</h2>
+        <h2 className="mb-4 text-base font-semibold text-slate-800">Políticas ativas</h2>
         {policies.length === 0 ? (
-          <p className="text-sm text-slate-400">Nenhuma política configurada.</p>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
+            <p className="text-sm text-slate-500">Nenhuma política configurada.</p>
+          </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table className="w-full text-sm">
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs font-medium text-slate-500">
-                <tr>
-                  <th className="px-4 py-2 text-left">Nome</th>
-                  <th className="px-4 py-2 text-left">Risco mín.</th>
-                  <th className="px-4 py-2 text-left">Ação</th>
-                  <th className="px-4 py-2 text-left">Escopo</th>
-                  <th className="px-4 py-2" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {policies.map((pol) => (
-                  <tr key={pol.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-2 font-medium text-slate-800">{pol.nome}</td>
-                    <td className="px-4 py-2 capitalize text-slate-600">{pol.risco_minimo}</td>
-                    <td className="px-4 py-2">
-                      <BadgeDecision decision={pol.acao} />
-                    </td>
-                    <td className="px-4 py-2 text-slate-500">
-                      {pol.aplicacao_id ? `App #${pol.aplicacao_id}` : 'Global'}
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      <button
-                        onClick={() => handleDesativarPolicy(pol.id)}
-                        className="rounded px-2 py-0.5 text-xs text-red-500 hover:bg-red-50"
-                      >
-                        Desativar
-                      </button>
-                    </td>
+          <div className="overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm divide-y divide-slate-200">
+                <thead className="bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-6 py-4 text-left">Nome</th>
+                    <th className="px-6 py-4 text-left">Risco mín.</th>
+                    <th className="px-6 py-4 text-left">Ação</th>
+                    <th className="px-6 py-4 text-left">Escopo</th>
+                    <th className="px-6 py-4" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-200 bg-white">
+                  {policies.map((pol) => (
+                    <tr key={pol.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-slate-800">{pol.nome}</td>
+                      <td className="px-6 py-4 capitalize text-slate-600">{pol.risco_minimo}</td>
+                      <td className="px-6 py-4">
+                        <BadgeDecision decision={pol.acao} />
+                      </td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {pol.aplicacao_id ? `App #${pol.aplicacao_id}` : 'Global'}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleDesativarPolicy(pol.id)}
+                          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <ShieldOff className="h-3.5 w-3.5" />
+                          Desativar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>
     </div>
   )
 }
-

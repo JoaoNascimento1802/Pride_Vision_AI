@@ -5,6 +5,7 @@
  * sobrevive ao recarregar a página.
  */
 import { Link, useSearchParams } from 'react-router-dom'
+import { FilterX } from 'lucide-react'
 
 import { listarAplicacoes, listarVulnerabilidades, obterOpcoes } from '../api/client'
 import type { FiltrosVulnerabilidade, Risco, StatusVulnerabilidade } from '../api/types'
@@ -61,7 +62,7 @@ export function Vulnerabilidades() {
         descricao="Ordenadas por risco. As confirmadas pelas duas ferramentas aparecem primeiro dentro de cada nível."
       />
 
-      <div className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-slate-200 bg-white p-4">
+      <div className="mb-4 flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <FiltroSelecao
           rotulo="Aplicação"
           valor={aplicacaoId ?? ''}
@@ -103,7 +104,7 @@ export function Vulnerabilidades() {
             onChange={(evento) =>
               definirFiltro('apenas_correlacionadas', evento.target.checked ? 'true' : '')
             }
-            className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
           />
           Somente correlacionadas
         </label>
@@ -112,8 +113,9 @@ export function Vulnerabilidades() {
           <button
             type="button"
             onClick={() => setParametros(new URLSearchParams())}
-            className="pb-2 text-sm text-slate-500 hover:text-slate-800 hover:underline"
+            className="flex items-center gap-1 pb-2 text-sm text-slate-500 hover:text-indigo-600 hover:underline transition-all duration-200"
           >
+            <FilterX className="h-4 w-4" />
             Limpar filtros
           </button>
         )}
@@ -133,29 +135,29 @@ export function Vulnerabilidades() {
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200">
               <tr>
-                <th className="px-4 py-3 font-medium">Risco</th>
-                <th className="px-4 py-3 font-medium">Vulnerabilidade</th>
-                <th className="px-4 py-3 font-medium">Aplicação</th>
-                <th className="px-4 py-3 font-medium">Origem</th>
-                <th className="px-4 py-3 font-medium">Severidade</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Identificada em</th>
+                <th className="px-6 py-4 font-medium">Risco</th>
+                <th className="px-6 py-4 font-medium">Vulnerabilidade</th>
+                <th className="px-6 py-4 font-medium">Aplicação</th>
+                <th className="px-6 py-4 font-medium">Origem</th>
+                <th className="px-6 py-4 font-medium">Severidade</th>
+                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium">Identificada em</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-200">
               {lista.dados.map((vuln) => (
                 <tr key={vuln.id} className="transition hover:bg-slate-50">
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <BadgeRisco risco={vuln.risco} label={vuln.risco_label} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <Link
                       to={`/vulnerabilidades/${vuln.id}`}
-                      className="block hover:text-violet-700"
+                      className="block hover:text-indigo-600 transition-colors"
                     >
                       <span className="flex flex-wrap items-center gap-2">
                         <TipoVulnerabilidade tipo={vuln.tipo_vuln} />
@@ -166,24 +168,24 @@ export function Vulnerabilidades() {
                       </span>
                     </Link>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <span className="block text-slate-700">{vuln.aplicacao_nome}</span>
                     <EtiquetaAmbiente label={vuln.aplicacao_ambiente} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <span className="flex gap-1">
                       {vuln.origens.map((origem) => (
                         <BadgeFerramenta key={origem} nome={origem} />
                       ))}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-500">
+                  <td className="px-6 py-4 text-slate-500">
                     {vuln.severidade_original ?? '—'}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <BadgeStatus status={vuln.status} label={vuln.status_label} />
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-slate-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-slate-500">
                     {new Date(vuln.identificada_em).toLocaleDateString('pt-BR')}
                   </td>
                 </tr>
@@ -215,7 +217,7 @@ function FiltroSelecao({
       <select
         value={valor}
         onChange={(evento) => aoMudar(evento.target.value)}
-        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-shadow"
       >
         <option value="">Todas</option>
         {opcoes.map((opcao) => (

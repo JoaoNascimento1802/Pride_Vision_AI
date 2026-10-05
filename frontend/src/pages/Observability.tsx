@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Cartao } from '../components/Feedback'
+Ôªøimport { useEffect, useState } from 'react'
 import { http } from '../api/client'
+import { Activity, Database, Server, Brain, RefreshCw, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 
 interface HealthStatus {
   status: string
@@ -78,69 +78,140 @@ export function Observability() {
   }
 
   if (loading) {
-    return <div className="p-6 text-gray-500">Carregando mÈtricas...</div>
+    return (
+      <div className="flex items-center justify-center h-full p-6 text-slate-500">
+        <RefreshCw className="w-6 h-6 mr-2 animate-spin text-indigo-600" />
+        Carregando m√©tricas...
+      </div>
+    )
+  }
+
+  const getStatusIcon = (status?: string) => {
+    return status === 'ok' || status === 'up' ? (
+      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+    ) : (
+      <XCircle className="w-5 h-5 text-red-500" />
+    )
+  }
+
+  const getStatusBadge = (status?: string) => {
+    return (
+      <span className="px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ">
+        {getStatusIcon(status)}
+        {status?.toUpperCase() || 'UNKNOWN'}
+      </span>
+    )
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 max-w-7xl mx-auto space-y-6 bg-slate-50 min-h-screen">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">System Health (Observability)</h1>
-        <button onClick={carregar} className="bg-slate-200 px-3 py-1 rounded">Atualizar</button>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <Activity className="w-7 h-7 text-indigo-600" />
+            Vis√£o Geral do Sistema (Observability)
+          </h1>
+          <p className="text-slate-500 mt-1">M√©tricas e sa√∫de dos servi√ßos em tempo real</p>
+        </div>
+        <button 
+          onClick={carregar} 
+          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-indigo-700 hover:shadow-md font-medium text-sm"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Atualizar
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Cartao titulo="Deep Health Check">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-              <span className="font-medium">Status Geral</span>
-              <span className={`px-2 py-1 rounded text-sm ${health?.status === 'ok' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {health?.status?.toUpperCase() || 'UNKNOWN'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-              <span className="font-medium">Banco de Dados</span>
-              <span className={`px-2 py-1 rounded text-sm ${health?.database === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {health?.database?.toUpperCase() || 'UNKNOWN'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-              <span className="font-medium">IntegraÁ„o Jira</span>
-              <span className={`px-2 py-1 rounded text-sm ${health?.services?.jira === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {health?.services?.jira?.toUpperCase() || 'UNKNOWN'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-              <span className="font-medium">Motor GenAI</span>
-              <span className={`px-2 py-1 rounded text-sm ${health?.services?.genai === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {health?.services?.genai?.toUpperCase() || 'UNKNOWN'}
-              </span>
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+            <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+              <Server className="w-5 h-5 text-indigo-600" />
+              Deep Health Check
+            </h2>
+          </div>
+          <div className="p-6">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Activity className="w-5 h-5 text-slate-400" />
+                  <span className="font-medium text-slate-700">Status Geral</span>
+                </div>
+                {getStatusBadge(health?.status)}
+              </div>
+              
+              <div className="flex justify-between items-center p-3.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Database className="w-5 h-5 text-slate-400" />
+                  <span className="font-medium text-slate-700">Banco de Dados</span>
+                </div>
+                {getStatusBadge(health?.database)}
+              </div>
+              
+              <div className="flex justify-between items-center p-3.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Server className="w-5 h-5 text-slate-400" />
+                  <span className="font-medium text-slate-700">Integra√ß√£o Jira</span>
+                </div>
+                {getStatusBadge(health?.services?.jira)}
+              </div>
+              
+              <div className="flex justify-between items-center p-3.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Brain className="w-5 h-5 text-slate-400" />
+                  <span className="font-medium text-slate-700">Motor GenAI</span>
+                </div>
+                {getStatusBadge(health?.services?.genai)}
+              </div>
             </div>
           </div>
-        </Cartao>
+        </div>
 
-        <Cartao titulo="MÈtricas Principais (Prometheus)">
-          <div className="space-y-4">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+            <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-indigo-600" />
+              M√©tricas Principais (Prometheus)
+            </h2>
+          </div>
+          <div className="p-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-blue-50 rounded border border-blue-100">
-                <div className="text-sm text-blue-600 font-medium">RequisiÁıes Totais</div>
-                <div className="text-2xl font-bold text-blue-900">{metrics?.totalRequests || 0}</div>
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-2 mb-2 text-indigo-600">
+                  <Activity className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Requisi√ß√µes Totais</span>
+                </div>
+                <div className="text-3xl font-bold text-slate-800">{metrics?.totalRequests || 0}</div>
               </div>
-              <div className="p-4 bg-red-50 rounded border border-red-100">
-                <div className="text-sm text-red-600 font-medium">Taxa de Erro (4xx/5xx)</div>
-                <div className="text-2xl font-bold text-red-900">{metrics?.errorRate.toFixed(2)}%</div>
+              
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-2 mb-2 text-red-600">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Taxa de Erro (4xx/5xx)</span>
+                </div>
+                <div className="text-3xl font-bold text-slate-800">{metrics?.errorRate.toFixed(2)}%</div>
               </div>
-              <div className="p-4 bg-yellow-50 rounded border border-yellow-100">
-                <div className="text-sm text-yellow-600 font-medium">Filas de Background</div>
-                <div className="text-2xl font-bold text-yellow-900">{metrics?.activeTasks || 0}</div>
+              
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-2 mb-2 text-amber-600">
+                  <Activity className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Filas de Background</span>
+                </div>
+                <div className="text-3xl font-bold text-slate-800">{metrics?.activeTasks || 0}</div>
               </div>
-              <div className="p-4 bg-purple-50 rounded border border-purple-100">
-                <div className="text-sm text-purple-600 font-medium">Conexıes DB (Est.)</div>
-                <div className="text-2xl font-bold text-purple-900">{metrics?.dbConnections || 0}</div>
+              
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-center gap-2 mb-2 text-purple-600">
+                  <Database className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Conex√µes DB (Est.)</span>
+                </div>
+                <div className="text-3xl font-bold text-slate-800">{metrics?.dbConnections || 0}</div>
               </div>
             </div>
           </div>
-        </Cartao>
+        </div>
       </div>
     </div>
   )
 }
+

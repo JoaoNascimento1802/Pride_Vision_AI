@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiGetAuditLogs } from '../api/client'
 import { Erro, Vazio } from '../components/Feedback'
+import { History, ChevronLeft, ChevronRight, FileText, User } from 'lucide-react'
 
 export function Auditoria() {
   const [logs, setLogs] = useState<any[]>([])
@@ -41,10 +42,11 @@ export function Auditoria() {
   const totalPaginas = Math.ceil(total / limite)
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 bg-slate-50 min-h-screen">
       <div className="sm:flex sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold leading-7 text-slate-900 sm:truncate sm:tracking-tight">
+          <h1 className="text-2xl font-bold leading-7 text-slate-900 sm:truncate sm:tracking-tight flex items-center gap-2">
+            <History className="h-6 w-6 text-indigo-600" />
             Trilha de Auditoria
           </h1>
           <p className="mt-2 text-sm text-slate-500">
@@ -56,23 +58,23 @@ export function Auditoria() {
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-              <table className="min-w-full divide-y divide-slate-300">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">
                       Data/Hora
                     </th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">
                       Ação
                     </th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">
                       Entidade
                     </th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">
                       Ator
                     </th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">
                       Detalhes
                     </th>
                   </tr>
@@ -80,39 +82,46 @@ export function Auditoria() {
                 <tbody className="divide-y divide-slate-200 bg-white">
                   {carregando ? (
                     <tr>
-                      <td colSpan={5} className="py-10 text-center text-sm text-slate-500">
+                      <td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">
                         Carregando...
                       </td>
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-10 text-center text-sm text-slate-500">
+                      <td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">
                         <Vazio titulo="Nenhum registro" descricao="A trilha de auditoria está vazia." />
                       </td>
                     </tr>
                   ) : (
                     logs.map((log) => (
-                      <tr key={log.id}>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-slate-900">
+                      <tr key={log.id} className="hover:bg-slate-50 transition-colors duration-150">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-900 flex items-center gap-2">
+                          <History className="h-4 w-4 text-slate-400" />
                           {new Date(log.criado_em).toLocaleString('pt-BR')}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 font-mono font-medium">
                           {log.action}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
-                          {log.entity_type} {log.entity_id ? `(#${log.entity_id})` : ''}
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
+                          <div className="flex items-center gap-1.5">
+                            <FileText className="h-4 w-4 text-slate-400" />
+                            <span>{log.entity_type} {log.entity_id ? `(#${log.entity_id})` : ''}</span>
+                          </div>
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
                           {log.actor ? (
-                            <div>
-                              <div>{log.actor.nome}</div>
-                              <div className="text-xs text-slate-400">{log.actor.email}</div>
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-slate-400" />
+                              <div>
+                                <div className="font-medium text-slate-700">{log.actor.nome}</div>
+                                <div className="text-xs text-slate-400">{log.actor.email}</div>
+                              </div>
                             </div>
                           ) : (
                             <span className="text-slate-400">Sistema / Desconhecido</span>
                           )}
                         </td>
-                        <td className="px-3 py-4 text-xs text-slate-500 max-w-xs truncate" title={JSON.stringify(log.new_value || log.metadata_info || {})}>
+                        <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate" title={JSON.stringify(log.new_value || log.metadata_info || {})}>
                           {log.new_value ? JSON.stringify(log.new_value) : (log.metadata_info ? JSON.stringify(log.metadata_info) : '-')}
                         </td>
                       </tr>
@@ -122,7 +131,7 @@ export function Auditoria() {
               </table>
               
               {!carregando && totalPaginas > 1 && (
-                <div className="flex items-center justify-between border-t border-slate-200 bg-white px-4 py-3 sm:px-6">
+                <div className="flex items-center justify-between border-t border-slate-200 bg-white px-6 py-4">
                   <div className="flex flex-1 justify-between sm:hidden">
                     <button
                       onClick={() => setPagina(p => Math.max(1, p - 1))}
@@ -152,18 +161,18 @@ export function Auditoria() {
                         <button
                           onClick={() => setPagina(p => Math.max(1, p - 1))}
                           disabled={pagina === 1}
-                          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 transition-colors"
                         >
                           <span className="sr-only">Anterior</span>
-                          &larr;
+                          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))}
                           disabled={pagina === totalPaginas}
-                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 transition-colors"
                         >
                           <span className="sr-only">Próxima</span>
-                          &rarr;
+                          <ChevronRight className="h-5 w-5" aria-hidden="true" />
                         </button>
                       </nav>
                     </div>
