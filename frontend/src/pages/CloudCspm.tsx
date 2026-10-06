@@ -67,7 +67,7 @@ export function CloudCspm() {
           </div>
           <p className="mt-2 text-3xl font-bold text-slate-900">{stats.complianceScore}%</p>
           <div className="mt-2 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-             <div className={\h-full \\} style={{ width: \\%\ }}></div>
+             <div className="h-full bg-indigo-500" style={{ width: `${stats.complianceScore}%` }}></div>
           </div>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -114,7 +114,7 @@ export function CloudCspm() {
                 {vulnsCloud.map((v) => {
                   const isToxic = v.risco === 'critico' && v.tipo_vuln.toLowerCase().includes('public')
                   return (
-                    <tr key={v.id} className={\hover:bg-slate-50 transition-colors duration-150 \\}>
+                    <tr key={v.id} className="hover:bg-slate-50 transition-colors duration-150">
                       <td className="px-6 py-4">
                         <div className="font-semibold text-slate-900">{v.tipo_vuln}</div>
                         {isToxic && (
@@ -135,7 +135,7 @@ export function CloudCspm() {
                       </td>
                       <td className="px-6 py-4">
                         <Link
-                          to={\/vulnerabilidades/\\}
+                          to={`/vulnerabilidades/${v.id}`}
                           className="inline-flex items-center gap-1 font-medium text-indigo-600 hover:text-indigo-700 transition-colors text-xs"
                         >
                           Detalhes <ExternalLink className="h-3 w-3" />

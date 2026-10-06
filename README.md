@@ -113,7 +113,7 @@ A interface gráfica estará disponível em `http://localhost:5173`.
 Este projeto foi desenvolvido e configurado por:
 
 - **João Emanuel Pessoa do Nascimento** - RM: 571612
-- **Karina Aparecida Bezerra** - RM: 569500
+- **Karina Aparecida Bezerra** (@Karina-Bezerra) - RM: 569500
 - **Davi Freire de França** - RM: 569659
 - **Thales Samuel Paulino** - RM: 571762
 - **Yanuska Monalisa Antunes Yabiku** - RM: 571686

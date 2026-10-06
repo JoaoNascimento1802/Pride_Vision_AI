@@ -3,14 +3,12 @@
 
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Activity, RefreshCw, ExternalLink, Filter, Target, Terminal } from 'lucide-react'
+import { Activity, RefreshCw, Filter, Target, Terminal } from 'lucide-react'
 
 import { listarFindingsRuntime } from '../api/client'
 import { Carregando, Erro, Vazio } from '../components/Feedback'
 import { TituloDaPagina } from '../components/Layout'
 import { useRequisicao } from '../hooks/useRequisicao'
-
-const SEVERIDADES = ['', 'critico', 'alto', 'medio', 'baixo'] as const
 
 function badgeSeveridade(sev: string) {
   const map: Record<string, string> = {
@@ -25,7 +23,7 @@ function badgeSeveridade(sev: string) {
   }
   const cls = map[sev.toLowerCase()] ?? 'bg-slate-100 text-slate-700 ring-slate-300'
   return (
-    <span className={\inline-flex items-center rounded px-2.5 py-0.5 text-xs font-semibold uppercase ring-1 ring-inset \\}>
+    <span className={`inline-flex items-center rounded px-2.5 py-0.5 text-xs font-semibold uppercase ring-1 ring-inset ${cls}`}>
       {sev}
     </span>
   )
@@ -87,7 +85,7 @@ export function RuntimeSecurity() {
               onClick={recarregar}
               className="flex items-center gap-2 transition-all duration-200 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50 hover:shadow-md"
             >
-              <RefreshCw className={\h-4 w-4 \\} /> Atualizar
+              <RefreshCw className="h-4 w-4" /> Atualizar
             </button>
           </div>
         }
@@ -138,7 +136,7 @@ export function RuntimeSecurity() {
         {carregando && !dados ? (
           <Carregando />
         ) : erro ? (
-          <Erro mensagem={erro} onTentarNovamente={recarregar} />
+          <Erro mensagem={erro} aoTentar={recarregar} />
         ) : (
           dados && dados.length > 0 ? (
             <div className="overflow-x-auto">
@@ -155,9 +153,8 @@ export function RuntimeSecurity() {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {dados.map((f) => {
-                    const isCorrelated = f.vulnerabilidade_id !== null;
                     return (
-                      <tr key={f.id} className={\hover:bg-slate-50 transition-colors duration-150 \\}>
+                      <tr key={f.id} className="hover:bg-slate-50 transition-colors duration-150">
                         <td className="px-6 py-4 font-mono text-xs text-slate-600 whitespace-nowrap">
                           {new Date(f.last_seen_at).toLocaleString()}
                         </td>
@@ -186,7 +183,7 @@ export function RuntimeSecurity() {
                         <td className="px-6 py-4">
                           {f.vulnerabilidade_id ? (
                             <Link
-                              to={\/vulnerabilidades/\\}
+                              to={`/vulnerabilidades/${f.vulnerabilidade_id}`}
                               className="inline-flex items-center gap-1.5 rounded-md bg-red-100 px-2.5 py-1 text-xs font-bold text-red-800 hover:bg-red-200 transition-colors"
                             >
                               <Target className="h-3.5 w-3.5" /> Ver Vuln Elevada

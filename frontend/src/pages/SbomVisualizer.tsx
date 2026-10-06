@@ -2,7 +2,7 @@
 // Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
 
 import { useParams, Link } from 'react-router-dom'
-import { Package, ShieldCheck, FileJson, ArrowLeft, ExternalLink, ShieldAlert } from 'lucide-react'
+import { Package, ShieldCheck, FileJson, ArrowLeft, ShieldAlert } from 'lucide-react'
 
 import { http } from '../api/client'
 import { Carregando, Erro, Vazio } from '../components/Feedback'
@@ -32,14 +32,14 @@ export function SbomVisualizer() {
   const { id } = useParams() // aplicacao_id
 
   const { dados: sboms, carregando: c1, erro: e1 } = useRequisicao(
-    () => http.get<SbomResumo[]>(\/api/aplicacoes/\/sboms\).then(res => res.data),
+    () => http.get<SbomResumo[]>(`/api/aplicacoes/${id}/sboms`).then(res => res.data),
     [id]
   )
 
   const latestSbom = sboms?.[0]
 
   const { dados: componentes, carregando: c2, erro: e2 } = useRequisicao(
-    () => latestSbom ? http.get<SbomComponentDetalhe[]>(\/api/sboms/\/componentes\).then(res => res.data) : Promise.resolve([]),
+    () => latestSbom ? http.get<SbomComponentDetalhe[]>(`/api/sboms/${latestSbom.id}/componentes`).then(res => res.data) : Promise.resolve([]),
     [latestSbom?.id]
   )
 
