@@ -34,6 +34,15 @@ A plataforma atende a todas as necessidades do ciclo de vida de segurança de so
 
 ---
 
+
+## 📚 Documentação (SDD)
+
+A pasta `SDD` contém toda a documentação estruturada do projeto, seguindo a abordagem de *Software Design Document* e *Spec-Driven Development*. Lá você encontrará:
+- A decomposição completa dos Critérios de Aceitação (ACs).
+- Os fluxos de arquitetura, ingestão, risk engine e machine learning.
+- O manual do usuário original no subdiretório de anexos.
+- Tabelas de rastreabilidade entre requisitos e testes automatizados.
+
 ## 🏗️ Arquitetura e Padrões
 
 O projeto foi desenhado sob o conceito de "Spec-Driven Development", garantindo máxima qualidade, testabilidade e separação de responsabilidades.
