@@ -55,7 +55,7 @@ export function SbomVisualizer() {
             Software Bill of Materials (SBOM)
           </span>
         }
-        descricao="Visualizao da rvore de dependncias e supply chain em conformidade com CycloneDX."
+        descricao="Visualização da árvore de dependências e supply chain em conformidade com CycloneDX."
         acao={
           <Link
             to="/aplicacoes"
@@ -73,7 +73,7 @@ export function SbomVisualizer() {
       ) : !latestSbom ? (
         <Vazio
           titulo="Nenhum SBOM encontrado"
-          descricao="No h arquivos CycloneDX processados para esta aplicao."
+          descricao="Não há arquivos CycloneDX processados para esta aplicação."
         />
       ) : (
         <div className="space-y-6">
@@ -100,7 +100,7 @@ export function SbomVisualizer() {
               <div className="flex items-center gap-3">
                 <div className="rounded-md bg-amber-50 p-2"><ShieldAlert className="h-5 w-5 text-amber-600"/></div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500">ltima Atualizao</p>
+                  <p className="text-sm font-medium text-slate-500">Última Atualização</p>
                   <p className="text-sm font-bold text-slate-900 mt-1">{new Date(latestSbom.criado_em).toLocaleString('pt-BR')}</p>
                 </div>
               </div>
@@ -109,16 +109,16 @@ export function SbomVisualizer() {
 
           <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
              <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-                <h3 className="font-semibold text-slate-800">Inventrio de Dependncias (Supply Chain)</h3>
+                <h3 className="font-semibold text-slate-800">Inventário de Dependências (Supply Chain)</h3>
              </div>
              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-4 text-left font-semibold text-slate-800">Nome do Pacote</th>
-                    <th className="px-6 py-4 text-left font-semibold text-slate-800">Verso</th>
+                    <th className="px-6 py-4 text-left font-semibold text-slate-800">Versão</th>
                     <th className="px-6 py-4 text-left font-semibold text-slate-800">Ecossistema</th>
-                    <th className="px-6 py-4 text-left font-semibold text-slate-800">Licena</th>
+                    <th className="px-6 py-4 text-left font-semibold text-slate-800">Licença</th>
                     <th className="px-6 py-4 text-left font-semibold text-slate-800">PURL</th>
                   </tr>
                 </thead>
@@ -132,7 +132,7 @@ export function SbomVisualizer() {
                           {c.ecossistema || 'library'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-600">{c.licenca || 'No declarada'}</td>
+                      <td className="px-6 py-4 text-slate-600">{c.licenca || 'Não declarada'}</td>
                       <td className="px-6 py-4 font-mono text-[10px] text-slate-400 truncate max-w-xs" title={c.purl}>
                         {c.purl}
                       </td>
