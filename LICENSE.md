@@ -1,4 +1,4 @@
-Copyright (c) 2024, Equipe PRIDE Vision AI (João Emanuel Pessoa do Nascimento, Karina Aparecida Bezerra, Davi Freire de França, Thales Samuel Paulino, Yanuska Monalisa Antunes Yabiku).
+Copyright (c) 2026, Equipe PRIDE Vision AI (João Emanuel Pessoa do Nascimento, Karina Aparecida Bezerra, Davi Freire de França, Thales Samuel Paulino, Yanuska Monalisa Antunes Yabiku).
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
