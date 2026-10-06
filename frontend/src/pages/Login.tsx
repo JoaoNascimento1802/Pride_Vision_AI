@@ -116,7 +116,7 @@ export function Login() {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-sm text-slate-600">
               {cadastrando ? 'Já possui conta?' : 'Primeiro acesso?'}{' '}
               <button
                 type="button"
@@ -129,17 +129,6 @@ export function Login() {
                 {cadastrando ? 'Entrar agora' : 'Criar uma conta'}
               </button>
             </p>
-            
-            <div className="pt-4 border-t border-slate-200">
-              <a 
-                href="/como_usar.txt" 
-                target="_blank" 
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                Ler o Passo a Passo (TXT) <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
           </div>
         </div>
       </div>
