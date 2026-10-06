@@ -1,3 +1,6 @@
+// Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+// Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 /**
  * App.tsx — Rotas da aplicação.
  *
@@ -22,6 +25,7 @@ import { Observability } from './pages/Observability'
 import { CloudCspm } from './pages/CloudCspm'
 import { RuntimeSecurity } from './pages/RuntimeSecurity'
 import { TenantAdmin } from './pages/TenantAdmin'
+import { SbomVisualizer } from './pages/SbomVisualizer'
 
 function Rotas() {
   const { usuario, carregando } = useAuth()
@@ -46,6 +50,7 @@ function Rotas() {
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/aplicacoes" element={<Aplicacoes />} />
+        <Route path="/aplicacoes/:id/sboms" element={<SbomVisualizer />} />
         <Route path="/vulnerabilidades" element={<Vulnerabilidades />} />
         <Route path="/vulnerabilidades/:id" element={<DetalheVulnerabilidade />} />
         <Route path="/ci-seguranca" element={<CiCdSecurity />} />

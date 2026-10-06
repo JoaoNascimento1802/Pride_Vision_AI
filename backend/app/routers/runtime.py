@@ -1,4 +1,7 @@
-﻿from datetime import UTC, datetime
+# Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+# Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
@@ -9,7 +12,7 @@ from app.models.container import ContainerInstance
 from app.models.enums import Ferramenta, Risco, StatusVulnerabilidade
 from app.models.ingestion import Finding
 from app.models.vulnerability import Vulnerability
-from app.schemas.runtime import FalcoEvent, RuntimeIngestionResponse
+from app.schemas.runtime import FalcoEvent, RuntimeEventResponse, RuntimeIngestionResponse
 
 # Import SLA and Ticketing if needed, but since it's an API, we can just let SLA service handle it
 # or manually assign SLA deadline.
@@ -117,3 +120,22 @@ def ingest_runtime_event(
     db.commit()
 
     return RuntimeIngestionResponse(status="success", events_processed=1, vulnerability_id=vulnerability_id)
+
+from typing import Any
+
+@router.get("/events", response_model=list[RuntimeEventResponse])
+def get_runtime_events(
+    container_id: str | None = None,
+    severity: str | None = None,
+    limit: int = 50,
+    db: Session = Depends(get_db)
+) -> Any:
+    query = db.query(Finding).filter(Finding.origem == Ferramenta.RUNTIME)
+    
+    if container_id:
+        query = query.filter(Finding.container_id == container_id)
+    if severity:
+        query = query.filter(Finding.severidade == severity.lower())
+        
+    findings = query.order_by(Finding.last_seen_at.desc()).limit(limit).all()
+    return findings

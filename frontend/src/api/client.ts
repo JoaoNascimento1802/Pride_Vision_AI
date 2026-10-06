@@ -1,3 +1,6 @@
+// Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+// Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 /**
  * client.ts — Cliente HTTP e funções de acesso à API.
  *
@@ -406,5 +409,23 @@ export async function listarTenants(): Promise<TenantInfo[]> {
 
 export async function listarUsuariosTenant(tenantId: number): Promise<TenantUserInfo[]> {
   const { data } = await http.get<TenantUserInfo[]>(`/api/auth/tenants/${tenantId}/users`)
+  return data
+}
+export interface RuntimeFinding {
+  id: number
+  aplicacao_id: number | null
+  container_id: string | null
+  process_name: string | null
+  syscall: string | null
+  rule_name: string | null
+  severidade: string
+  mensagem: string | null
+  hit_count: number
+  last_seen_at: string
+  vulnerabilidade_id: number | null
+}
+
+export async function listarFindingsRuntime(params?: { container_id?: string, severity?: string, limit?: number }): Promise<RuntimeFinding[]> {
+  const { data } = await http.get<RuntimeFinding[]>('/api/v1/ingestion/runtime/events', { params })
   return data
 }

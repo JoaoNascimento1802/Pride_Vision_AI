@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+# Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 """
 enums.py — Vocabulário controlado do domínio.
 
@@ -167,6 +170,7 @@ class TicketProvider(EnumRotulado):
     GITHUB = "github"
     GITLAB = "gitlab"
     AZURE_DEVOPS = "azure_devops"
+    SERVICENOW = "servicenow"
 
     @property
     def label(self) -> str:
@@ -175,6 +179,7 @@ class TicketProvider(EnumRotulado):
             "github": "GitHub Issues",
             "gitlab": "GitLab Issues",
             "azure_devops": "Azure DevOps",
+            "servicenow": "ServiceNow",
         }[self.value]
 
 

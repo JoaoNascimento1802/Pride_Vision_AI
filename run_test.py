@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+# Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 ﻿from app.database import Base, criar_engine, sessionmaker, current_tenant_id
 from app.models.application import Application
 from app.models.enums import Exposicao, Ambiente, Importancia

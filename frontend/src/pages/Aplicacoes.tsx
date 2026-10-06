@@ -1,3 +1,6 @@
+// Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+// Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 /**
  * Aplicacoes.tsx — Inventário e envio dos relatórios.
  *
@@ -7,7 +10,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Edit2, Trash2, Eye, FileUp,  } from 'lucide-react'
+import { Plus, Edit2, Trash2, Eye, FileUp, Package } from 'lucide-react'
 
 import {
   atualizarAplicacao,
@@ -191,7 +194,7 @@ function CartaoAplicacao({
                 Ver
               </Link>
             )}
-            {podeEscrever && (
+            <Link to={`/aplicacoes/${aplicacao.id}/sboms`} className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:shadow-sm"><Package className="mr-1.5 h-3 w-3" />Ver SBOM</Link>{podeEscrever && (
               <>
                 <button
                   type="button"

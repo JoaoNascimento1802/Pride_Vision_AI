@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+# Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 """
 test_ci.py — Testes de integração dos endpoints de CI/CD e Security Gates.
 

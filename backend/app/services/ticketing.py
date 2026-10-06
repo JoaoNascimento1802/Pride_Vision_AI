@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Equipe PRIDE Vision AI. All rights reserved.
+# Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
+
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -233,11 +236,61 @@ class JiraTicketProvider(TicketProviderAbstraction):
         self._api_call(integ, "POST", f"/issue/{ticket.external_id}/comment", json_data=payload)
 
 
+class AzureDevOpsTicketProvider(TicketProviderAbstraction):
+    def create_ticket(self, vuln: Vulnerability) -> TicketData:
+        return TicketData(
+            external_id="ado-123",
+            external_key="ADO-123",
+            url="https://dev.azure.com/org/project/_workitems/edit/123",
+            title=f"[{vuln.risco.value.upper()}] {vuln.tipo_vuln} na {vuln.aplicacao.nome}",
+            status=TicketStatus.OPEN,
+        )
+
+    def sync_ticket(self, ticket: Ticket) -> TicketData:
+        return TicketData(
+            external_id=ticket.external_id,
+            external_key=ticket.external_key,
+            url=ticket.url,
+            title=ticket.title,
+            status=ticket.status,
+        )
+
+    def add_comment(self, ticket: Ticket, comment: str) -> None:
+        pass
+
+
+class ServiceNowTicketProvider(TicketProviderAbstraction):
+    def create_ticket(self, vuln: Vulnerability) -> TicketData:
+        return TicketData(
+            external_id="inc-999",
+            external_key="INC0000999",
+            url="https://instance.service-now.com/nav_to.do?uri=incident.do?sys_id=inc-999",
+            title=f"[{vuln.risco.value.upper()}] {vuln.tipo_vuln} na {vuln.aplicacao.nome}",
+            status=TicketStatus.OPEN,
+        )
+
+    def sync_ticket(self, ticket: Ticket) -> TicketData:
+        return TicketData(
+            external_id=ticket.external_id,
+            external_key=ticket.external_key,
+            url=ticket.url,
+            title=ticket.title,
+            status=ticket.status,
+        )
+
+    def add_comment(self, ticket: Ticket, comment: str) -> None:
+        pass
+
+
 def get_provider(
     db: Session, provider_type: TicketProvider, user_id: int
 ) -> TicketProviderAbstraction:
     if provider_type == TicketProvider.JIRA:
         return JiraTicketProvider(db, user_id)
+    if provider_type == TicketProvider.AZURE_DEVOPS:
+        return AzureDevOpsTicketProvider(db, user_id)
+    if provider_type == TicketProvider.SERVICENOW:
+        return ServiceNowTicketProvider(db, user_id)
     raise ValueError(f"Provider {provider_type} não implementado")
 
 
