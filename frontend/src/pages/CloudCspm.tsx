@@ -3,14 +3,13 @@
 
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Cloud, ShieldAlert, AlertTriangle, ExternalLink, RefreshCw, CheckCircle, Server, HardDrive } from 'lucide-react'
+import { Cloud, ShieldAlert, AlertTriangle, ExternalLink, RefreshCw, CheckCircle, Server } from 'lucide-react'
 
 import { listarVulnerabilidades } from '../api/client'
 import { BadgeRisco } from '../components/Badges'
 import { Carregando, Erro, Vazio } from '../components/Feedback'
 import { TituloDaPagina } from '../components/Layout'
 import { useRequisicao } from '../hooks/useRequisicao'
-import type { Vulnerabilidade } from '../api/types'
 
 function providerIcon(endpoint: string) {
   if (endpoint.includes('arn:aws')) return '?? AWS'
@@ -97,7 +96,7 @@ export function CloudCspm() {
         {carregando && !dados ? (
           <Carregando />
         ) : erro ? (
-          <Erro mensagem={erro} onTentarNovamente={recarregar} />
+          <Erro mensagem={erro} aoTentar={recarregar} />
         ) : vulnsCloud.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -128,7 +127,7 @@ export function CloudCspm() {
                         <div className="font-mono text-xs text-slate-500 truncate max-w-xs" title={v.endpoint}>{v.endpoint}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <BadgeRisco risco={v.risco as Risco} label={v.risco} />
+                        <BadgeRisco risco={v.risco as any} label={v.risco} />
                       </td>
                       <td className="px-6 py-4 text-slate-500 text-xs">
                         {new Date(v.identificada_em).toLocaleDateString('pt-BR')}

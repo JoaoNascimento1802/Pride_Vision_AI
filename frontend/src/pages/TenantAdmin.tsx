@@ -148,6 +148,8 @@ function CardTenant({ tenant }: { tenant: TenantInfo }) {
 export function TenantAdmin() {
   const { usuario } = useAuth()
 
+  const { dados, carregando, erro, recarregar } = useRequisicao(listarTenants, [])
+  
   if (usuario?.role !== 'admin') {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -163,8 +165,6 @@ export function TenantAdmin() {
       </div>
     )
   }
-
-  const { dados, carregando, erro, recarregar } = useRequisicao(listarTenants, [])
 
   return (
     <div className="bg-slate-50 min-h-screen">
