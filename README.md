@@ -108,14 +108,18 @@ A interface gráfica estará disponível em `http://localhost:5173`.
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Equipe de Engenharia (Autores)
 
 Este projeto foi desenvolvido e configurado por:
 
-- **João Emanuel** - [@JoaoNascimento1802](https://github.com/JoaoNascimento1802)
+- **João Emanuel Pessoa do Nascimento** - RM: 571612
+- **Karina Aparecida Bezerra** - RM: 569500
+- **Davi Freire de França** - RM: 569659
+- **Thales Samuel Paulino** - RM: 571762
+- **Yanuska Monalisa Antunes Yabiku** - RM: 571686
 
 ---
 
 ## 📄 Licença
 
-Este projeto foi construído como demonstração técnica avançada de integração de segurança, DevOps e Inteligência Artificial. Todos os direitos reservados.
+Este projeto é licenciado sob a **BSD 3-Clause License**. Consulte o arquivo `LICENSE.md` no repositório para mais detalhes. Todos os direitos reservados à equipe PRIDE Vision AI.
