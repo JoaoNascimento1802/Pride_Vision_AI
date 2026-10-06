@@ -127,7 +127,7 @@ cd c:\Users\Cliente\personaProject\pride-vision-platform\backend
 python popular_demo.py
 ```
 
-Isso cria o usuário `ana@exemplo.com` (senha `senha-de-demonstracao`), cadastra
+Isso cria o usuário `admin@pride.com` (senha `admin`), cadastra
 cinco aplicações em contextos diferentes e envia os **mesmos** relatórios para
 todas.
 

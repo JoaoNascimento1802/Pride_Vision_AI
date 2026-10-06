@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-BASE = "http://127.0.0.1:8002"
+BASE = "http://127.0.0.1:8000"
 EMAIL = "admin@pride.com"
 SENHA = "admin"
 
@@ -146,7 +146,7 @@ def main() -> int:
         chamar("GET", "/api/saude")
     except urllib.error.URLError:
         print(f"[ERRO] O backend não respondeu em {BASE}.", file=sys.stderr)
-        print("       Suba-o com: python -m uvicorn app.main:app --port 8002", file=sys.stderr)
+        print("       Suba-o com: python -m uvicorn app.main:app --port 8000", file=sys.stderr)
         return 1
 
     # O usuário pode já existir de uma execução anterior
