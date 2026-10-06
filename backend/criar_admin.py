@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Equipe PRIDE Vision AI. All rights reserved.
 # Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
 
-﻿import sys
+import sys
 import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))

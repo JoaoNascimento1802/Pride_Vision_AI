@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Equipe PRIDE Vision AI. All rights reserved.
 # Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
 
-﻿from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship

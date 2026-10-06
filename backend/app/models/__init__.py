@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Equipe PRIDE Vision AI. All rights reserved.
 # Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
 
-﻿"""
+"""
 models â€” Modelos ORM da plataforma.
 
 Importar este pacote registra todas as tabelas no metadata da Base, que Ã© o que

@@ -1,7 +1,7 @@
 // Copyright (c) 2026, Equipe PRIDE Vision AI. All rights reserved.
 // Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
 
-﻿import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 

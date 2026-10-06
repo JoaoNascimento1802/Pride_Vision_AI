@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Equipe PRIDE Vision AI. All rights reserved.
 # Licensed under the BSD 3-Clause License. See LICENSE.md in the project root for license information.
 
-﻿from app.models.tenant import Tenant, TenantUser
+from app.models.tenant import Tenant, TenantUser
 from app.models.enums import Role
 
 with open('backend/app/routers/auth.py', 'r', encoding='utf-8') as f:
