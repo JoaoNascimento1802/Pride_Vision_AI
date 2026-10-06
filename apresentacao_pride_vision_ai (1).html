@@ -85,13 +85,33 @@
             font-size: 0.65em;
             border-collapse: collapse;
             margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         table.custom-table th, table.custom-table td {
-            border: 1px solid #444;
-            padding: 8px;
+            border: 2px solid #555;
+            padding: 14px 10px;
             text-align: center;
+            vertical-align: middle;
         }
-        table.custom-table th { background: #222; color: #00E676; }
+        table.custom-table th { 
+            background: #1a1a1a; 
+            color: #00E676; 
+            border-bottom: 3px solid #00E676;
+            font-size: 1.1em;
+        }
+        table.custom-table tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+
+        @media print {
+            .reveal .slides section {
+                page-break-after: always !important;
+                padding: 20px !important;
+            }
+            .reveal { background-color: #111 !important; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -147,6 +167,60 @@
                         <p>Calcular o risco real através de <strong>"Combinações Tóxicas"</strong> e automatizar fluxos de SLA/Jira.</p>
                     </div>
                 </div>
+            </section>
+
+            <section>
+                <h2>Origens do Projeto (Sprint 3)</h2>
+                <h3>A Prova de Conceito Inicial</h3>
+                <p>O PRIDE nasceu como uma <strong>POC focada em provar a viabilidade matemática</strong> da priorização de vulnerabilidades (ASPM), usando regras fixas e dados de apenas dois scanners (Semgrep e Nuclei).</p>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <h4 style="color: #FF5252;">Limitações Assumidas no MVP</h4>
+                        <ul style="font-size: 0.8em;">
+                            <li>Upload 100% <strong>manual</strong> de logs via navegador.</li>
+                            <li>Ausência de suporte a Contêineres, Nuvem (CSPM) e Runtime.</li>
+                            <li>Sem isolamento Multi-tenant (todos viam os mesmos dados) nem migrações (Alembic).</li>
+                            <li>Ausência de integração real (a IA gerava o texto para o usuário "copiar e colar" no Jira).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Comparativo: POC vs Code Freeze v1.0</h2>
+                <h3>De um MVP manual para uma Plataforma Enterprise Automática</h3>
+                <table class="custom-table" style="font-size: 0.6em;">
+                    <tr>
+                        <th style="width: 20%;">Dimensão</th>
+                        <th style="width: 40%; background: #3E2723; color: #FFCC80;">Sprint 3 (Prova de Conceito)</th>
+                        <th style="width: 40%; background: #1B5E20; color: #A5D6A7;">Plataforma Atual (v1.0)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Ingestão</strong></td>
+                        <td>Upload manual do <code>semgrep.json</code> e <code>nuclei.jsonl</code></td>
+                        <td>Ingestão via APIs REST, CI/CD Actions e Webhooks (Zero-Touch)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cobertura</strong></td>
+                        <td>Apenas Código (SAST) e Aplicação Ativa (DAST básico)</td>
+                        <td>Código, Dependências (SCA), SBOM (CycloneDX), Nuvem (CSPM) e Runtime (eBPF)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Arquitetura B2B</strong></td>
+                        <td>Single-tenant e acesso amplo sem perfis</td>
+                        <td>Autenticação SSO, RBAC robusto e Multi-Tenancy nativo (Row-Level Security)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Workflow</strong></td>
+                        <td>Status atualizados na mão</td>
+                        <td>Auto-resolução, motor de SLAs e Security Gates nativos bloqueando builds falhos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Integrações</strong></td>
+                        <td>Nenhuma</td>
+                        <td>Jira (OAuth 3LO), Azure DevOps e ServiceNow com emissão em ADF</td>
+                    </tr>
+                </table>
             </section>
 
             <section>
@@ -428,17 +502,6 @@ Credenciais viram: [MASKED-CREDS]
                     <tr><td>Cloud CSPM / eBPF</td><td>✅</td><td>✅</td><td>🟢 Funcional</td></tr>
                     <tr><td>Integração Ticketing (Jira, ServiceNow, Azure)</td><td>✅</td><td>✅</td><td>🟢 Funcional</td></tr>
                 </table>
-            </section>
-
-            <section>
-                <h2>O Estado da Plataforma</h2>
-                <h3>Prontidão Arquitetural (Code Freeze v1.0)</h3>
-                <ul>
-                    <li><strong>Motor de Correlação:</strong> Transforma alertas em ações através da detecção de Combinações Tóxicas (Reachability).</li>
-                    <li><strong>Garantia de Qualidade Extrema:</strong> Pipeline validado com <strong>481 testes de backend</strong> e 45 de frontend.</li>
-                    <li><strong>100% de Rastreabilidade:</strong> O script <code>rastreabilidade.py</code> garante a verificação rigorosa de 316 Acceptance Criteria (ACs).</li>
-                    <li><strong>Zero Mocks:</strong> Políticas de engenharia restritas aprovadas para evolução corporativa.</li>
-                </ul>
             </section>
 
         </div>
